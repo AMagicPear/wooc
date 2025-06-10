@@ -64,11 +64,6 @@ form{
     font-size: larger;
 }
 
-.login-title>p.selected{
-    color: #209359;
-    font-weight: bold;
-}
-
 #login-bg {
     width: 100%;
     height: 100%;
