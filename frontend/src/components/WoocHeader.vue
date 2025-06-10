@@ -1,0 +1,37 @@
+<template>
+    <header>
+        <h2>中国大学WOOC</h2>
+        <nav>
+            <router-link to="/">首页</router-link>
+            <router-link to="/about">关于</router-link>
+            <router-link to="/login">登录｜注册</router-link>
+        </nav>
+    </header>
+</template>
+
+<style lang="css" scoped>
+nav{
+    display: flex;
+    gap: 15px;
+}
+nav a{
+    text-decoration: none;
+    color: var(--color-text);
+}
+
+header{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    box-shadow:  0 1px 5px rgba(0,0,0,0.1);
+    padding: 15px 20px;
+    height: 60px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+</style>
