@@ -15,7 +15,7 @@ import util.discussion_functions as discussion_functions
 app = Flask(__name__)# 用户管理
 CORS(app)  # 允许跨域访问（前后端分离开发时必须）
 
-
+# 注册
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -28,7 +28,7 @@ def register():
         return jsonify({'message': '注册成功', 'user_id': user_id}), 201
     else:
         return jsonify({'message': '用户名或邮箱已存在'}), 400
-
+# 登录
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -41,6 +41,7 @@ def login():
         return jsonify({'message': '用户名或密码错误'}), 401
 
 # 课程管理
+# 创建课程
 @app.route('/courses', methods=['POST'])
 def create_course():
     data = request.get_json()
@@ -50,12 +51,12 @@ def create_course():
     cover_image = data.get('cover_image')
     course_id = course_functions.create_course(title, description, teacher_id, cover_image)
     return jsonify({'message': '课程创建成功', 'course_id': course_id}), 201
-
+# 获取所有课程
 @app.route('/courses', methods=['GET'])
 def get_all_courses():
     courses = course_functions.get_all_courses()
     return jsonify(courses), 200
-
+# 根据课程id获取课程
 @app.route('/courses/<int:course_id>', methods=['GET'])
 def get_course(course_id):
     course = course_functions.get_course_by_id(course_id)
@@ -63,6 +64,18 @@ def get_course(course_id):
         return jsonify(course), 200
     else:
         return jsonify({'message': '课程不存在'}), 404
+# 获取学生选择的所有课程
+@app.route('/students/<int:student_id>/courses', methods=['GET'])
+def get_student_courses_route(student_id):
+    """通过学生ID获取学生已选的所有课程"""
+    courses = course_functions.get_student_courses(student_id)
+    return jsonify(courses)
+# 获取教师创建的所有课程
+@app.route('/teachers/<int:teacher_id>/courses', methods=['GET'])
+def get_teacher_courses_route(teacher_id):
+    """通过教师ID获取教师创建的所有课程"""
+    courses = course_functions.get_teacher_courses(teacher_id)
+    return jsonify(courses)
 
 # 课程资源管理
 @app.route('/courses/<int:course_id>/resources', methods=['POST'])
