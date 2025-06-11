@@ -1,52 +1,51 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import WoocButton from '@/components/WoocButton.vue'
+import { InputText } from 'primevue'
+import { Form } from '@primevue/forms'
+import WoocLogo from '@/assets/pic/wooc-logo.png'
+
 const username = ref('')
 const password = ref('')
-const message  = ref('')
+const message = ref('')
 
-const selected = ref<'student'|'teacher'>('student')
+const selected = ref<'student' | 'teacher'>('student')
 
-function handleLogin() {
-    console.log(username, password)
+function onFormSubmit() {
+    console.log(username.value, password.value)
 }
+
 </script>
 
 <template>
     <div id="login-bg">
         <div class="login-container">
+            <img :src="WoocLogo" alt="Wooc Logo">
             <div class="login-title" :class="selected">
-                <p class="teacher-title" @click="selected='teacher'">教师登录</p>
-                <p class="student-title" @click="selected='student'">学生登录</p>
+                <p class="teacher-title" @click="selected = 'teacher'">教师</p>
+                <p class="student-title" @click="selected = 'student'">学生</p>
             </div>
-            <form @submit.prevent="handleLogin">
-                <input v-model="username" placeholder="用户名" />
-                <input v-model="password" type="password" placeholder="密码" />
-                <WoocButton type="submit">登录</WoocButton>
-                <p v-if="message">{{ message }}</p>
-            </form>
+            <Form @submit="onFormSubmit">
+                <InputText v-model:model-value="username" name="username" type="text" placeholder="用户名" fluid />
+                <InputText v-model:model-value="password" name="password" type="password" placeholder="密码" fluid />
+                <WoocButton type="submit">点击注册</WoocButton>
+            </Form>
         </div>
     </div>
 </template>
 
+
 <style lang="css" scoped>
-.login-title>p{
+.login-title>p {
     cursor: pointer;
 }
 
 .login-title.student>.student-title,
-.login-title.teacher>.teacher-title{
+.login-title.teacher>.teacher-title {
     color: var(--color-tint);
 }
 
-form>input{
-    /* height: 30px; */
-    padding: 10px;
-    border-radius: 14px;
-    border-style: solid;
-}
-
-.login-container{
+.login-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -54,13 +53,13 @@ form>input{
     gap: 30px;
 }
 
-form{
+form {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-.login-title{
+.login-title {
     display: flex;
     gap: 40px;
     font-size: larger;

@@ -3,6 +3,9 @@ import { useRoute } from 'vue-router';
 import ExampleImg from "@/assets/pic/685110093414064026.webp"
 import WoocButton from '@/components/WoocButton.vue';
 const lessonId = useRoute().params.id as string;
+function startLearning() {
+  console.log('开始学习');
+}
 </script>
 
 <template lang="pug">
@@ -12,7 +15,7 @@ const lessonId = useRoute().params.id as string;
     .lesson-title
       h3 课程编号： {{ lessonId }}
       p.teacher 教师名称
-      WoocButton 开始学习
+      WoocButton(@click="startLearning") 开始学习
   .lesson-content
     section
       .section-title
