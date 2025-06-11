@@ -4,6 +4,7 @@ import WoocButton from '@/components/WoocButton.vue'
 import { InputText } from 'primevue'
 import { Form } from '@primevue/forms'
 import WoocLogo from '@/assets/pic/wooc-logo.png'
+import baseApiUrl from '@/api/baseUrl'
 
 const username = ref('')
 const password = ref('')
@@ -13,6 +14,20 @@ const selected = ref<'student' | 'teacher'>('student')
 
 function onFormSubmit() {
     console.log(username.value, password.value)
+    fetch(new URL('login', baseApiUrl),{
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            username: username.value,
+            password: password.value,
+            // role: selected.value,
+            // email: "AMagicPear@outlook.com"
+        })
+    }).then(res => res.json()).then(data => { 
+        console.log(data)
+    })
 }
 
 </script>

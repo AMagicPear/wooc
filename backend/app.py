@@ -1,15 +1,8 @@
 from flask import Flask, request, jsonify, send_from_directory, abort
 import os
 from werkzeug.utils import secure_filename
-app = Flask(__name__)
-
-from flask import Flask, request, jsonify
 from flask_cors import CORS
 import bcrypt
-
-CORS(app)  # 允许跨域访问（前后端分离开发时必须）
-
-from flask import Flask, request, jsonify
 import util.course_functions as course_functions
 import util.resource_functions as resource_functions
 import util.enrollment_functions as enrollment_functions
@@ -19,9 +12,10 @@ import util.test_functions as test_functions
 import util.assignment_functions as assignment_functions
 import util.discussion_functions as discussion_functions
 
-app = Flask(__name__)
+app = Flask(__name__)# 用户管理
+CORS(app)  # 允许跨域访问（前后端分离开发时必须）
 
-# 用户管理
+
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()

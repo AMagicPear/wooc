@@ -25,7 +25,7 @@ def init_database():
         cursor = conn.cursor()
         
         # 读取并执行schema.sql中的SQL语句
-        with open('schema.sql', 'r', encoding='utf-8') as f:
+        with open('util/schema.sql', 'r', encoding='utf-8') as f:
             schema = f.read()
             cursor.executescript(schema)
         conn.commit()
