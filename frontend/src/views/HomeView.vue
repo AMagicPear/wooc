@@ -4,9 +4,9 @@ import DefaultImg from "@/assets/pic/685110093414064026.webp"
 </script>
 
 <template lang="pug">
-    h2 邮🧱精品课
+    h2 →🧱精品课
     .lesson-grid
-      LessonCard(v-for="_ in 10" :id="0" :title="'标题'" :imgsrc="DefaultImg" :teacher="'作者'")
+      LessonCard(v-for="i in 10" :id="i.toString()" :title="'标题'" :imgsrc="DefaultImg" :teacher="'作者'")
 </template>
 
 <style lang="css" scoped>

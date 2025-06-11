@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
+import WoocButton from '@/components/WoocButton.vue'
 const username = ref('')
 const password = ref('')
 const message  = ref('')
@@ -21,7 +22,7 @@ function handleLogin() {
             <form @submit.prevent="handleLogin">
                 <input v-model="username" placeholder="用户名" />
                 <input v-model="password" type="password" placeholder="密码" />
-                <button type="submit">登录</button>
+                <WoocButton type="submit">登录</WoocButton>
                 <p v-if="message">{{ message }}</p>
             </form>
         </div>
@@ -35,13 +36,14 @@ function handleLogin() {
 
 .login-title.student>.student-title,
 .login-title.teacher>.teacher-title{
-    color: rgb(26, 128, 130);
+    color: var(--color-tint);
 }
 
-form>input,
-form>button{
-    height: 30px;
-    border-radius: 4px;
+form>input{
+    /* height: 30px; */
+    padding: 10px;
+    border-radius: 14px;
+    border-style: solid;
 }
 
 .login-container{
@@ -78,7 +80,7 @@ form{
     height: 480px;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
     background-color: var(--color-background);
-    border-radius: 14px;
+    border-radius: var(--card-border-radius);
     padding: 30px;
 }
 </style>

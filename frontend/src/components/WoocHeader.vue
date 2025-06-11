@@ -2,7 +2,7 @@
     <header>
         <div class="left">
             <img src="@/assets/pic/wooc-logo.png" />
-            <h2>邮砖大学WOOC</h2>
+            <h2>→砖大学WOOC</h2>
         </div>
         <nav>
             <router-link to="/">首页</router-link>
