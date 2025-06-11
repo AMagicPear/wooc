@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import ExampleImg from "@/assets/pic/685110093414064026.webp"
 import WoocButton from '@/components/WoocButton.vue';
+const router = useRouter();
+
 const lessonId = useRoute().params.id as string;
 function startLearning() {
   console.log('开始学习');
+  router.push(`/lesson/${lessonId}/learn`);
 }
 </script>
 

@@ -5,12 +5,17 @@ import { InputText } from 'primevue'
 import { Form } from '@primevue/forms'
 import WoocLogo from '@/assets/pic/wooc-logo.png'
 import baseApiUrl from '@/api/baseUrl'
+import SelectButton from 'primevue/selectbutton';
+
 
 const username = ref('')
 const password = ref('')
+const email = ref('')
 const message = ref('')
 
 const selected = ref<'student' | 'teacher'>('student')
+const states = ref<('注册'|'登录')[]>(['注册','登录'])
+const state = ref(states.value[0])
 
 function onFormSubmit() {
     console.log(username.value, password.value)
@@ -22,10 +27,11 @@ function onFormSubmit() {
         body: JSON.stringify({
             username: username.value,
             password: password.value,
-            // role: selected.value,
-            // email: "AMagicPear@outlook.com"
+            role: selected.value,
+            email: email.value
         })
     }).then(res => res.json()).then(data => { 
+        message.value = data.message
         console.log(data)
     })
 }
@@ -43,8 +49,10 @@ function onFormSubmit() {
             <Form @submit="onFormSubmit">
                 <InputText v-model:model-value="username" name="username" type="text" placeholder="用户名" fluid />
                 <InputText v-model:model-value="password" name="password" type="password" placeholder="密码" fluid />
-                <WoocButton type="submit">点击注册</WoocButton>
+                <InputText v-if="state=='注册'" v-model:model-value="email" name="email" type="email" placeholder="邮箱" fluid />
+                <WoocButton type="submit">点击{{ state }}</WoocButton>
             </Form>
+            <SelectButton v-model="state" :options="states"></SelectButton>
         </div>
     </div>
 </template>
@@ -91,7 +99,7 @@ form {
 
 .login-container {
     width: 360px;
-    height: 480px;
+    height: 520px;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
     background-color: var(--color-background);
     border-radius: var(--card-border-radius);
