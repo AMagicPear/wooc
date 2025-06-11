@@ -11,9 +11,11 @@ import WoocHeader from './components/WoocHeader.vue';
 
 <style scoped>
 .main-content {
+  padding-inline: 10px;
   padding-top: 60px;
   min-height: 100vh;
   height: 100vh;
+  overflow: scroll;
   background-color: var(--color-background-mute);
 }
 
