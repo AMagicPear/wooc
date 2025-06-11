@@ -1,12 +1,11 @@
+import sqlite3
 from util.db_connection import get_db_connection
 import hashlib
-import uuid
 
 def register_user(username, password, email, role):
     """注册新用户"""
-    # 密码加密
-    salt = uuid.uuid4().hex
-    hashed_password = hashlib.sha512((password + salt).encode()).hexdigest()
+    # 直接对密码进行哈希处理，不使用盐值
+    hashed_password = hashlib.sha512(password.encode()).hexdigest()
     
     with get_db_connection() as conn:
         cursor = conn.cursor()
@@ -28,11 +27,9 @@ def login_user(username, password):
         user = cursor.fetchone()
         
         if user:
-            # 验证密码
+            # 直接对输入密码进行哈希处理，不使用盐值
             stored_password = user['password']
-            # 实际应用中需要从数据库中获取盐值
-            salt = stored_password[:32]  # 假设盐值是前32个字符
-            hashed_input = hashlib.sha512((password + salt).encode()).hexdigest()
+            hashed_input = hashlib.sha512(password.encode()).hexdigest()
             
             if hashed_input == stored_password:
                 return {
@@ -65,9 +62,8 @@ def update_user(user_id, username=None, email=None, password=None):
             params.append(email)
         
         if password:
-            # 更新密码需要重新生成盐值和哈希
-            salt = uuid.uuid4().hex
-            hashed_password = hashlib.sha512((password + salt).encode()).hexdigest()
+            # 直接对新密码进行哈希处理，不使用盐值
+            hashed_password = hashlib.sha512(password.encode()).hexdigest()
             update_fields.append("password = ?")
             params.append(hashed_password)
         
@@ -81,4 +77,3 @@ def update_user(user_id, username=None, email=None, password=None):
             return cursor.rowcount > 0
         
         return False
-    
