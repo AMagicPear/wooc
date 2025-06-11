@@ -1,6 +1,9 @@
 <template>
     <header>
-        <h2>中国大学WOOC</h2>
+        <div class="left">
+            <img src="@/assets/pic/wooc-logo.png" />
+            <h2>邮砖大学WOOC</h2>
+        </div>
         <nav>
             <router-link to="/">首页</router-link>
             <router-link to="/about">关于</router-link>
@@ -10,23 +13,34 @@
 </template>
 
 <style lang="css" scoped>
-nav{
+.left{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+}
+
+.left>img{
+    width: 40px;
+}
+nav {
     display: flex;
     gap: 15px;
 }
-nav a{
+
+nav a {
     text-decoration: none;
     color: var(--color-text);
 }
 
-header{
+header {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     background-color: var(--color-background);
     color: var(--color-text);
-    box-shadow:  0 1px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
     padding: 15px 20px;
     height: 60px;
     z-index: 10;
