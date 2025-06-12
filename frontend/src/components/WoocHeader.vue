@@ -1,9 +1,9 @@
 <template>
     <header>
-        <div class="left">
+        <router-link to="/" class="left">
             <img src="@/assets/pic/wooc-logo.png" />
             <h2>→砖大学WOOC</h2>
-        </div>
+        </router-link>
         <nav>
             <router-link to="/">首页</router-link>
             <router-link to="/about">关于</router-link>
@@ -18,6 +18,11 @@
     align-items: center;
     gap: 10px;
     font-weight: bold;
+}
+
+a.left{
+    text-decoration: none;
+    color: var(--color-text);
 }
 
 .left>img{

@@ -37,6 +37,7 @@
 
   --card-border-radius: 14px;
   --color-tint: rgb(58, 210, 159);
+  --color-tint-l: rgba(58, 210, 159, 0.608);
 }
 
 *,

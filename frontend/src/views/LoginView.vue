@@ -61,6 +61,11 @@ function onFormSubmit() {
 <style lang="css" scoped>
 .login-title>p {
     cursor: pointer;
+    transition: color 0.2s;
+}
+
+.login-title>p:hover{
+    color: gray;
 }
 
 .login-title.student>.student-title,

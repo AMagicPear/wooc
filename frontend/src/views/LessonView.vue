@@ -50,6 +50,7 @@ function startLearning() {
 
 .lesson-header>img{
     width: 60%;
+    max-width: 600px;
     /* margin: 20px; */
     border-radius: var(--card-border-radius);
     object-fit: cover;
