@@ -55,7 +55,7 @@ def create_course():
 @app.route('/courses', methods=['GET'])
 def get_all_courses():
     courses = course_functions.get_all_courses()
-    return jsonify(courses), 200
+    return jsonify({'course':courses}), 200
 # 根据课程id获取课程
 @app.route('/courses/<int:course_id>', methods=['GET'])
 def get_course(course_id):
