@@ -1,10 +1,15 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import ExampleImg from "@/assets/pic/685110093414064026.webp"
-import WoocButton from '@/components/WoocButton.vue';
+import Button from 'primevue/button';
+import JoinCourse from '@/components/icons/JoinCourse.vue';
+import { Rating } from 'primevue';
+import { ref } from 'vue';
 const router = useRouter();
 
 const lessonId = useRoute().params.id as string;
+
+const rating = ref(4);
 function startLearning() {
   console.log('开始学习');
   router.push(`/lesson/${lessonId}/learn`);
@@ -18,7 +23,12 @@ function startLearning() {
     .lesson-title
       h3 课程编号： {{ lessonId }}
       p.teacher 教师名称
-      WoocButton(@click="startLearning") 开始学习
+      Rating(v-model="rating" readonly)
+      Button(@click="startLearning" rounded)
+        JoinCourse(style="width: 20px;height: 20px;")
+        | 开始学习
+        //- JoinCourse(style="width: 20px;height: 20px;")
+        //- | 开始学习
   .lesson-content
     section
       .section-title
@@ -29,61 +39,46 @@ function startLearning() {
 </template>
 
 <style lang="css" scoped>
-.lesson-container{
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+.lesson-container {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .lesson-header,
-.lesson-content{
-    border-radius: var(--card-border-radius);
-    background-color: var(--color-background);
-    padding: 20px;
+.lesson-content {
+  border-radius: var(--card-border-radius);
+  background-color: var(--color-background);
+  padding: 20px;
 }
 
-.lesson-header{
+.lesson-header {
   display: flex;
   gap: 24px;
 }
 
-.lesson-header>img{
-    width: 60%;
-    max-width: 600px;
-    /* margin: 20px; */
-    border-radius: var(--card-border-radius);
-    object-fit: cover;
+.lesson-header>img {
+  width: 60%;
+  max-width: 450px;
+  border-radius: var(--card-border-radius);
+  object-fit: cover;
+}
+.lesson-title{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-.lesson-title>h3{
-    margin-block: 20px;
-    font-size: 24px;
-    font-weight: bolder;
+.lesson-title>h3 {
+  font-size: 24px;
+  font-weight: bolder;
 }
 
-.lesson-title.teacher{
-    font-size: 13px;
+.lesson-title.teacher {
+  font-size: 13px;
 }
-
 .lesson-title>button{
-    margin-block: 60px;
-    padding-inline: 40px;
-    padding-block: 8px;
-    border-radius: var(--card-border-radius);
-    border-style: none;
-    background-color: var(--color-tint);
-    color: white;
-    font-size: 16px;
-    font-weight: bolder;
-    cursor: pointer;
-}
-
-.lesson-title>button:hover{
-  opacity: 0.8;
-}
-
-.lesson-title>button:active{
-  opacity: 0.6;
+  margin-top: 30px;
 }
 </style>
