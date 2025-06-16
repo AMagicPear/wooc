@@ -8,16 +8,22 @@ import baseApiUrl from '@/api/baseUrl'
 import SelectButton from 'primevue/selectbutton';
 import FloatLabel from 'primevue/floatlabel'
 import Password from 'primevue/password'
-
+import { useToast } from 'primevue/usetoast'
+import Toast from 'primevue/toast'
+import { accountState } from '@/global/account'
+import { useRouter } from 'vue-router'
 
 const username = ref('')
 const password = ref('')
 const email = ref('')
-const message = ref('')
+// const message = ref('')
 
 const selected = ref<'student' | 'teacher'>('student')
 const states = ['注册', '登录']
 const state = ref(states[0])
+const router = useRouter()
+
+const toast = useToast()
 
 function onFormSubmit() {
   switch (state.value) {
@@ -34,6 +40,19 @@ function onFormSubmit() {
         })
       }).then(res => res.json()).then(data => {
         console.log(data)
+        if (data.result == true) {
+          accountState.isLoggedIn = true
+          accountState.role = data.user.role
+          accountState.userid = data.user.id
+          accountState.username = username.value
+          router.push('/')
+        }
+        toast.add({
+          severity: data.result ? 'success' : 'warn',
+          summary: '登录结果',
+          detail: data.message,
+          life: 3000
+        })
       })
       break;
     case '注册':
@@ -49,8 +68,13 @@ function onFormSubmit() {
           email: email.value
         })
       }).then(res => res.json()).then(data => {
-        // message.value = data.message
         console.log(data)
+        toast.add({
+          severity: 'info',
+          summary: '注册结果',
+          detail: data.message,
+          life: 3000
+        })
       })
       break;
   }
@@ -79,7 +103,8 @@ function onFormSubmit() {
           <Password id="password" :toggle-mask="true" v-model="password" type="password" :feedback="false" fluid />
           <label for="password">密码</label>
         </FloatLabel>
-        <Button type="submit" :label="state"/>
+        <Button type="submit" :label="state" />
+        <Toast />
       </Form>
       <SelectButton v-model="state" :options="states"></SelectButton>
     </div>
