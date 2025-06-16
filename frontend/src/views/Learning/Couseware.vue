@@ -11,21 +11,22 @@ const lessonId = useRoute().params.id as string;
 // onMounted(async () => {
 //   images.value?.push(DefaultImg);
 // });
-let options = {
-  autoplay: false,
-  controls: true,
-  sources: [
-    {
-      src: DefaultVideo,
-      type: "video/mp4",
-    },
-  ],
-}
+// let options = {
+//   autoplay: false,
+//   controls: true,
+//   sources: [
+//     {
+//       src: DefaultVideo,
+//       type: "video/mp4",
+//     },
+//   ],
+// }
 </script>
 
 <template>
   <div id="courseware">
-    <VideoPlayer v-bind="options"/>
+    <!-- <VideoPlayer v-bind="options"/> -->
+     <VideoPlayer/>
     <!-- <Galleria
       :value="images"
       :numVisible="5"

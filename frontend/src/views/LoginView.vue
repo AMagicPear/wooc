@@ -20,7 +20,7 @@ const email = ref('')
 
 const selected = ref<'student' | 'teacher'>('student')
 const states = ['注册', '登录']
-const state = ref(states[0])
+const state = ref(states[1])
 const router = useRouter()
 
 const toast = useToast()
