@@ -25,9 +25,9 @@ def register():
     role = data.get('role')
     user_id = user_functions.register_user(username, password, email, role)
     if user_id:
-        return jsonify({'message': '注册成功', 'user_id': user_id}), 201
+        return jsonify({'message': '注册成功', 'user_id': user_id,'result':True}), 201
     else:
-        return jsonify({'message': '用户名或邮箱已存在'}), 400
+        return jsonify({'message': '用户名或邮箱已存在','result':False}), 400
 # 登录
 @app.route('/login', methods=['POST'])
 def login():
@@ -36,9 +36,9 @@ def login():
     password = data.get('password')
     user = user_functions.login_user(username, password)
     if user:
-        return jsonify({'message': '登录成功', 'user': user}), 200
+        return jsonify({'message': '登录成功', 'user': user,'result':True}), 200
     else:
-        return jsonify({'message': '用户名或密码错误'}), 401
+        return jsonify({'message': '登录失败','result':False}), 401
 
 # 课程管理
 # 创建课程
@@ -61,21 +61,21 @@ def get_all_courses():
 def get_course(course_id):
     course = course_functions.get_course_by_id(course_id)
     if course:
-        return jsonify(course), 200
+        return jsonify({'course':course,'result':True}), 200
     else:
-        return jsonify({'message': '课程不存在'}), 404
+        return jsonify({'message': '课程不存在','result':False}), 404
 # 获取学生选择的所有课程
 @app.route('/students/<int:student_id>/courses', methods=['GET'])
 def get_student_courses_route(student_id):
     """通过学生ID获取学生已选的所有课程"""
     courses = course_functions.get_student_courses(student_id)
-    return jsonify(courses)
+    return jsonify({'courses':courses})
 # 获取教师创建的所有课程
 @app.route('/teachers/<int:teacher_id>/courses', methods=['GET'])
 def get_teacher_courses_route(teacher_id):
     """通过教师ID获取教师创建的所有课程"""
     courses = course_functions.get_teacher_courses(teacher_id)
-    return jsonify(courses)
+    return jsonify({'courses':courses})
 
 # 课程资源管理
 @app.route('/courses/<int:course_id>/resources', methods=['POST'])
@@ -93,7 +93,7 @@ def add_course_resource(course_id):
 @app.route('/courses/<int:course_id>/resources', methods=['GET'])
 def get_course_resources(course_id):
     resources = resource_functions.get_course_resources(course_id)
-    return jsonify(resources), 200
+    return jsonify({'resources':resources}), 200
 
 # 学生选课
 @app.route('/enroll', methods=['POST'])
@@ -103,9 +103,9 @@ def enroll_student():
     course_id = data.get('course_id')
     enrollment_id = enrollment_functions.enroll_student(student_id, course_id)
     if enrollment_id:
-        return jsonify({'message': '选课成功', 'enrollment_id': enrollment_id}), 201
+        return jsonify({'message': '选课成功', 'enrollment_id': enrollment_id ,'result':True}), 201
     else:
-        return jsonify({'message': '学生已经选过该课程'}), 400
+        return jsonify({'message': '学生已经选过该课程','result':False}), 400
 
 # 学习进度跟踪
 @app.route('/progress', methods=['POST'])
@@ -117,9 +117,9 @@ def update_learning_progress():
     completed = data.get('completed', False)
     success = progress_functions.update_learning_progress(student_id, resource_id, watched_duration, completed)
     if success:
-        return jsonify({'message': '学习进度更新成功'}), 200
+        return jsonify({'message': '学习进度更新成功','result':True}), 200
     else:
-        return jsonify({'message': '学习进度更新失败'}), 400
+        return jsonify({'message': '学习进度更新失败','result':False}), 400
 
 # 在线测试
 @app.route('/tests', methods=['POST'])
