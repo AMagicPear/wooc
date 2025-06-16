@@ -1,6 +1,15 @@
 <script setup lang="ts">
 import LessonCard from '@/components/LessonCard.vue';
 import DefaultImg from "@/assets/pic/685110093414064026.webp"
+import baseApiUrl from '@/api/baseUrl';
+import { onMounted } from 'vue';
+import type { Course } from '@/api/lessonApi';
+
+onMounted(async () => {
+    let response = await fetch(new URL('/courses', baseApiUrl))
+    let data: { result: boolean, courses: Course[] } = await response.json()
+    console.log(data)
+})
 </script>
 
 <template lang="pug">

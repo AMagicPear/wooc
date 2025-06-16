@@ -5,7 +5,7 @@ import WoocHeader from './components/WoocHeader.vue';
 <template>
   <WoocHeader />
   <main class="main-content">
-    <RouterView/>
+    <RouterView />
   </main>
 </template>
 
@@ -18,5 +18,4 @@ import WoocHeader from './components/WoocHeader.vue';
   overflow: scroll;
   background-color: var(--color-background-mute);
 }
-
 </style>
