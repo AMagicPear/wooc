@@ -9,7 +9,7 @@ import SelectButton from 'primevue/selectbutton';
 import FloatLabel from 'primevue/floatlabel'
 import Password from 'primevue/password'
 import { useToast } from 'primevue/usetoast'
-import Toast from 'primevue/toast'
+
 import { accountState } from '@/global/account'
 import { useRouter } from 'vue-router'
 
@@ -104,7 +104,7 @@ function onFormSubmit() {
           <label for="password">密码</label>
         </FloatLabel>
         <Button type="submit" :label="state" />
-        <Toast />
+
       </Form>
       <SelectButton v-model="state" :options="states"></SelectButton>
     </div>

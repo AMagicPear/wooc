@@ -26,6 +26,21 @@ const router = createRouter({
     {
       path: '/lesson/:id/learn',
       component: () => import('@/views/LearningView.vue'),
+      redirect: (to) => `${to.params.id}/learn/notice`,
+      children: [
+        {
+          path: 'notice',
+          component: () => import('@/views/Learning/Notice.vue'),
+        },
+        {
+          path: 'courseware',
+          component: () => import('@/views/Learning/Couseware.vue')
+        },
+        {
+          path: 'discussion',
+          component: () => import('@/views/Learning/Discussion.vue')
+        }
+      ]
     }
   ],
 })

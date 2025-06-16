@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import WoocHeader from './components/WoocHeader.vue';
+import WoocHeader from "./components/WoocHeader.vue";
+import Toast from 'primevue/toast'
 </script>
 
 <template>
@@ -7,6 +8,7 @@ import WoocHeader from './components/WoocHeader.vue';
   <main class="main-content">
     <RouterView />
   </main>
+  <Toast />
 </template>
 
 <style scoped>

@@ -1,4 +1,4 @@
-export interface Course{
+export interface Course {
     cover_image: string,
     created_at: string,
     description: string,

@@ -54,12 +54,12 @@ const toggle = (event: any) => {
             <Menu ref="avatarMenu" :model="items" id="overlay_menu" :popup="true">
                 <template #item="{ item, props }">
                     <RouterLink v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
-                        <a v-ripple :href="href" v-bind="props.action" @click="navigate">
+                        <a :href="href" v-bind="props.action" @click="navigate">
                             <span :class="item.icon" />
                             <span class="ml-2">{{ item.label }}</span>
                         </a>
                     </RouterLink>
-                    <a v-else v-rippple v-bind="props.action">
+                    <a v-else v-bind="props.action">
                         <span :class="item.icon" />
                         <span class="ml-2">{{ item.label }}</span>
                     </a>
