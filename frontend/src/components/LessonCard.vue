@@ -4,7 +4,7 @@ import { useRouter } from "vue-router";
 const router = useRouter()
 
 const props = withDefaults(defineProps<{
-    id: string,
+    id: number,
     title: string,
     teacher: string,
     imgsrc: string

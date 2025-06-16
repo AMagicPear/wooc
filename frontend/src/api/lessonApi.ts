@@ -1,7 +1,11 @@
 export interface Course{
-    id: number,
-    title: string,
+    cover_image: string,
+    created_at: string,
     description: string,
-    coverImage: string,
-    teacher: string,
+    enrollment_count: number,
+    id: number,
+    teacher_id: number,
+    teacher_name: string,
+    title: string,
+    updated_at: string,
 }
