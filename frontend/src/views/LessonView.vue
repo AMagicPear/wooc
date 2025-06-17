@@ -1,18 +1,20 @@
 <script setup lang="ts">
-import { useRoute, useRouter } from 'vue-router';
-import ExampleImg from "@/assets/pic/685110093414064026.webp"
-import Button from 'primevue/button';
-import JoinCourse from '@/components/icons/JoinCourse.vue';
-import { Rating } from 'primevue';
-import { ref } from 'vue';
+import { useRoute, useRouter } from "vue-router";
+import ExampleImg from "@/assets/pic/685110093414064026.webp";
+import Button from "primevue/button";
+import JoinCourse from "@/components/icons/JoinCourse.vue";
+import { Rating } from "primevue";
+import { ref } from "vue";
+import { accountState } from "@/global/account";
 const router = useRouter();
 
 const lessonId = useRoute().params.id as string;
 
 const rating = ref(4);
 function startLearning() {
-  console.log('开始学习');
   router.push(`/lesson/${lessonId}/learn`);
+  // TODO)) 向数据库添加学习课程信息
+  console.log(accountState.userid, "开始学习", lessonId);
 }
 </script>
 
@@ -58,19 +60,19 @@ function startLearning() {
   gap: 24px;
 }
 
-.lesson-header>img {
+.lesson-header > img {
   width: 60%;
   max-width: 450px;
   border-radius: var(--card-border-radius);
   object-fit: cover;
 }
-.lesson-title{
+.lesson-title {
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
-.lesson-title>h3 {
+.lesson-title > h3 {
   font-size: 24px;
   font-weight: bolder;
 }
@@ -78,7 +80,7 @@ function startLearning() {
 .lesson-title.teacher {
   font-size: 13px;
 }
-.lesson-title>button{
+.lesson-title > button {
   margin-top: 30px;
 }
 </style>

@@ -10,16 +10,16 @@ import "vidstack/player/ui";
 
 import type { MediaPlayerElement } from "vidstack/elements";
 import { onMounted, ref } from "vue";
-import TestVideo from '@/assets/2025-06-13 20-52-03.mp4'
 
+defineProps<{ src: string }>();
 // import { textTracks } from './tracks';
 
 const player = ref<MediaPlayerElement>();
-const src = ref("");
+// const src = ref("");
 
-onMounted(() => {
-  src.value = TestVideo;
-});
+// onMounted(() => {
+//   src.value = TestVideo;
+// });
 </script>
 
 <template>
@@ -39,7 +39,7 @@ onMounted(() => {
       /> -->
     </media-provider>
     <!-- Layouts -->
-    <media-video-layout/>
+    <media-video-layout />
   </media-player>
 </template>
 
