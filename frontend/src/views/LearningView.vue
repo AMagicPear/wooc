@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import Menubar from "primevue/menubar";
-import { useRoute } from "vue-router";
+import { useRoute} from "vue-router";
+
+import Tabs from "primevue/tabs";
+import TabList from "primevue/tablist";
+import Tab from "primevue/tab";
 
 const route = useRoute();
-const id = route.params.id as string;
 const items = [
   {
     label: "公告",
@@ -13,35 +15,61 @@ const items = [
   {
     label: "课件",
     icon: "pi pi-star",
-    route: "courseware"
+    route: "courseware",
+  },
+  {
+    label: "测验",
+    icon: "pi pi-pencil",
+    route: "exam"
   },
   {
     label: "讨论区",
     icon: "pi pi-star",
-    route: "discussion"
-  }
+    route: "discussion",
+  },
 ];
 </script>
 
 <template>
   <div id="learning-container">
-    <Menubar :model="items">
-      <template #item="{ item, props }">
-        <RouterLink v-slot="{ href, navigate }" :to="item.route" custom>
-          <a :href="href" v-bind="props.action" @click="navigate">
-            <span :class="item.icon" />
-            <span>{{ item.label }}</span>
+    <Tabs value="notice" class="tabs">
+      <TabList>
+        <Tab
+          v-for="tab in items"
+          :key="tab.label"
+          :value="tab.route"
+          @click="$router.push(tab.route)"
+        >
+          <a class="tab-link">
+            <i :class="tab.icon" />
+            <span>{{ tab.label }}</span>
           </a>
-        </RouterLink>
-      </template>
-    </Menubar>
-    <RouterView/>
-    <!-- <main>youce</main> -->
+        </Tab>
+      </TabList>
+    </Tabs>
+
+    <RouterView />
   </div>
 </template>
 
 <style lang="css" scoped>
 #learning-container {
   padding-top: 20px;
+}
+.tabs {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.tab-link {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: inherit;
+}
+
+.tab {
+  background-color: aqua;
 }
 </style>

@@ -1,4 +1,5 @@
 import HomeView from '@/views/HomeView.vue'
+import Notice from '@/views/Learning/Notice.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -35,7 +36,7 @@ const router = createRouter({
       children: [
         {
           path: 'notice',
-          component: () => import('@/views/Learning/Notice.vue'),
+          component: Notice
         },
         {
           path: 'courseware',
@@ -44,6 +45,10 @@ const router = createRouter({
         {
           path: 'discussion',
           component: () => import('@/views/Learning/Discussion.vue')
+        },
+        {
+          path: 'exam',
+          component: () => import('@/views/Learning/Exam.vue')
         }
       ]
     }
