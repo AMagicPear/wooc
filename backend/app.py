@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory, abort
+from flask import Flask, request, jsonify, send_from_directory, abort,send_file
 import os
 from werkzeug.utils import secure_filename
 from flask_cors import CORS
@@ -39,6 +39,33 @@ def login():
         return jsonify({'message': '登录成功', 'user': user,'result':True}), 200
     else:
         return jsonify({'message': '登录失败','result':False}), 401
+
+# 手动映射文件扩展名到 MIME 类型
+MIME_TYPE_MAPPING = {
+    'jpg': 'image/jpeg',
+    'jpeg': 'image/jpeg',
+    'png': 'image/png',
+    'gif': 'image/gif',
+    'pdf': 'application/pdf',
+    'txt': 'text/plain',
+    'mp4': 'video/mp4',
+    'mp3': 'audio/mpeg',
+}
+# 获取静态文件
+@app.route('/get_file/<path:file_path>')
+def get_file(file_path):
+    if not os.path.exists(file_path):
+        abort(404, description="文件不存在")
+    # 检查是否是文件
+    if not os.path.isfile(file_path):
+        abort(400, description="路径不是一个有效的文件")
+    # 获取文件扩展名（小写）
+    ext = os.path.splitext(file_path)[1].lstrip('.').lower()
+
+    # 根据扩展名获取 MIME 类型，没有匹配时使用默认值
+    mimetype = MIME_TYPE_MAPPING.get(ext, 'application/octet-stream')
+
+    return send_file(file_path, mimetype=mimetype)
 
 # 课程管理
 # 创建课程

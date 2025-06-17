@@ -1,4 +1,4 @@
-from util.db_connection import init_database
+from util.db_connection import init_database,delete_database
 import util.user_functions as user
 import util.course_functions as course
 import util.resource_functions as resource
@@ -11,6 +11,7 @@ import util.test_functions as test
 
 def main():
     # 初始化数据库
+    delete_database("util\course_management.db")
     init_database()
     
     # 示例：创建一个教师用户
@@ -28,14 +29,14 @@ def main():
         print("学生用户创建失败，用户名或邮箱已存在")
     
     # 示例：创建一门课程
-    course_id = course.create_course("Python编程基础", "学习Python编程语言的基础知识", teacher_id, "course_cover.jpg")
+    course_id = course.create_course("Python编程基础", "学习Python编程语言的基础知识", teacher_id, "media/image/test_image.jpg")
     if course_id:
         print(f"课程创建成功，ID: {course_id}")
     else:
         print("课程创建失败")
     
     # 示例：添加课程资源
-    video_id = resource.add_course_resource(course_id, "第1课：Python介绍", "Python语言概述", "video", "videos/lesson1.mp4", 10240000, 3600)
+    video_id = resource.add_course_resource(course_id, "第1课：Python介绍", "Python语言概述", "video", "media/video/test_video.mp4", 10240000, 3600)
     ppt_id = resource.add_course_resource(course_id, "第1课：Python介绍PPT", "课程PPT", "document", "documents/lesson1.pptx", 5120000)
     
     # 示例：学生选课
