@@ -30,4 +30,37 @@ def init_database():
             cursor.executescript(schema)
         conn.commit()
         print("数据库初始化完成")
+
+def delete_database(db_path):
+    """通过重新执行 schema.sql 重置数据库"""
+    """重置SQLite数据库，清空所有表并重置自增主键"""
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    
+    try:
+        # 1. 禁用外键约束
+        cursor.execute('PRAGMA foreign_keys = OFF')
+        
+        # 2. 获取所有表名
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+        tables = [table[0] for table in cursor.fetchall()]
+        
+        # 3. 清空每个表并重置自增主键
+        for table in tables:
+            if table.startswith('sqlite_'):
+                continue  # 跳过系统表
+            # 清空表数据
+            cursor.execute(f'DELETE FROM {table}')
+            # 重置自增主键（通过VACUUM）
+            cursor.execute(f'VACUUM {table}')
+        # 4. 启用外键约束
+        cursor.execute('PRAGMA foreign_keys = ON')
+        conn.commit()
+        print("数据库重置完成，所有表已清空且自增主键已重置")
+        
+    except sqlite3.Error as e:
+        print(f"重置数据库时出错: {e}")
+        conn.rollback()
+    finally:
+        conn.close()
     
