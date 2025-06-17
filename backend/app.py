@@ -172,16 +172,128 @@ def create_assignment():
     assignment_id = assignment_functions.create_assignment(course_id, title, description, deadline, max_score)
     return jsonify({'message': '作业创建成功', 'assignment_id': assignment_id}), 201
 
-# 讨论区
+
+#______________________________________讨论区________________________________________
+
 @app.route('/discussions', methods=['POST'])
-def create_discussion():
+def api_create_discussion():
+    """创建讨论主题"""
     data = request.get_json()
     course_id = data.get('course_id')
     title = data.get('title')
     content = data.get('content')
     author_id = data.get('author_id')
-    discussion_id = discussion_functions.create_discussion(course_id, title, content, author_id)
-    return jsonify({'message': '讨论主题创建成功', 'discussion_id': discussion_id}), 201
+    
+    if not all([course_id, title, content, author_id]):
+        return jsonify({'message': '缺少必要参数','result':False}), 400
+    
+    try:
+        discussion_id = discussion_functions.create_discussion(course_id, title, content, author_id)
+        return jsonify({
+            'message': '讨论主题创建成功', 
+            'discussion_id': discussion_id,
+            'result': True
+        }), 201
+    except Exception as e:
+        return jsonify({'message': f'创建失败: {str(e)}','result':False}), 500
+
+@app.route('/courses/<int:course_id>/discussions', methods=['GET'])
+def api_get_course_discussions(course_id):
+    """获取课程的所有讨论主题"""
+    try:
+        discussions = discussion_functions.get_course_discussions(course_id)
+        return jsonify({
+            'message': '获取成功',
+            'discussions': discussions,
+            'result': True
+        }), 200
+    except Exception as e:
+        return jsonify({'message': f'获取失败: {str(e)}','result':False}), 500
+
+@app.route('/discussions/<int:discussion_id>', methods=['GET'])
+def api_get_discussion_by_id(discussion_id):
+    """根据讨论ID获取讨论信息"""
+    try:
+        discussion = discussion_functions.get_discussion_by_id(discussion_id)
+        if not discussion:
+            return jsonify({'message': '讨论不存在','result':False}), 404
+        return jsonify({
+            'message': '获取成功',
+            'discussion': discussion,
+            'result':True
+        }), 200
+    except Exception as e:
+        return jsonify({'message': f'获取失败: {str(e)}','result':False}), 500
+
+@app.route('/discussions/<int:discussion_id>/replies', methods=['POST'])
+def api_add_discussion_reply(discussion_id):
+    """添加讨论回复"""
+    data = request.get_json()
+    content = data.get('content')
+    author_id = data.get('author_id')
+    
+    if not all([content, author_id]):
+        return jsonify({'message': '缺少必要参数','result':False}), 400
+    
+    try:
+        # 检查讨论是否存在
+        discussion = discussion_functions.get_discussion_by_id(discussion_id)
+        if not discussion:
+            return jsonify({'message': '讨论不存在','result':False}), 404
+            
+        reply_id = discussion_functions.add_discussion_reply(discussion_id, content, author_id)
+        return jsonify({
+            'message': '回复添加成功', 
+            'reply_id': reply_id,
+            'result':True
+        }), 201
+    except Exception as e:
+        return jsonify({'message': f'添加失败: {str(e)}','result':False}), 500
+
+@app.route('/discussions/<int:discussion_id>/replies', methods=['GET'])
+def api_get_discussion_replies(discussion_id):
+    """获取讨论的所有回复"""
+    try:
+        # 检查讨论是否存在
+        discussion = discussion_functions.get_discussion_by_id(discussion_id)
+        if not discussion:
+            return jsonify({'message': '讨论不存在','result':False}), 404
+            
+        replies = discussion_functions.get_discussion_replies(discussion_id)
+        return jsonify({
+            'message': '获取成功',
+            'replies': replies,
+            'result':True
+        }), 200
+    except Exception as e:
+        return jsonify({'message': f'获取失败: {str(e)}','result':False}), 500
+
+@app.route('/discussions/<int:discussion_id>', methods=['DELETE'])
+def api_delete_discussion_by_id(discussion_id):
+    """根据讨论ID删除讨论主题"""
+    try:
+        success = discussion_functions.delete_discussion_by_id(discussion_id)
+        if success:
+            return jsonify({'message': '讨论删除成功','result':True}), 200
+        else:
+            return jsonify({'message': '讨论不存在','result':False}), 404
+    except Exception as e:
+        return jsonify({'message': f'删除失败: {str(e)}','result':False}), 500
+
+@app.route('/discussion_replies/<int:reply_id>', methods=['DELETE'])
+def api_delete_discussion_reply_by_id(reply_id):
+    """根据回复ID删除讨论回复"""
+    try:
+        success = discussion_functions.delete_discussion_reply_by_id(reply_id)
+        if success:
+            return jsonify({'message': '回复删除成功','result':True}), 200
+        else:
+            return jsonify({'message': '回复不存在','result':False}), 404
+    except Exception as e:
+        return jsonify({'message': f'删除失败: {str(e)}','result':False}), 500
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

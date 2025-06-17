@@ -75,4 +75,19 @@ def get_discussion_replies(discussion_id):
             (discussion_id,)
         )
         return [dict(row) for row in cursor.fetchall()]
-    
+
+def delete_discussion_by_id(discussion_id):
+    """根据讨论ID删除讨论主题"""
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM discussions WHERE id = ?", (discussion_id,))
+        conn.commit()
+        return cursor.execute("SELECT changes()").fetchone()[0] > 0
+
+def delete_discussion_reply_by_id(reply_id):
+    """根据回复ID删除讨论回复"""
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM discussion_replies WHERE id = ?", (reply_id,))
+        conn.commit()
+        return cursor.execute("SELECT changes()").fetchone()[0] > 0
