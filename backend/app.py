@@ -14,7 +14,7 @@ import util.discussion_functions as discussion_functions
 
 app = Flask(__name__)# 用户管理
 CORS(app)  # 允许跨域访问（前后端分离开发时必须）
-
+# __________________________________________账号相关_____________________________________________
 # 注册
 @app.route('/register', methods=['POST'])
 def register():
@@ -67,7 +67,7 @@ def get_file(file_path):
 
     return send_file(file_path, mimetype=mimetype)
 
-# 课程管理
+# ___________________________________________课程管理_______________________________________________
 # 创建课程
 @app.route('/courses', methods=['POST'])
 def create_course():
@@ -148,7 +148,8 @@ def update_learning_progress():
     else:
         return jsonify({'message': '学习进度更新失败','result':False}), 400
 
-# 在线测试
+# ____________________________________在线测试____________________________________
+# 创建测试
 @app.route('/tests', methods=['POST'])
 def create_test():
     data = request.get_json()
@@ -157,10 +158,160 @@ def create_test():
     description = data.get('description')
     duration = data.get('duration')
     passing_score = data.get('passing_score', 60)
-    test_id = test_functions.create_test(course_id, title, description, duration, passing_score)
-    return jsonify({'message': '测试创建成功', 'test_id': test_id}), 201
 
-# 作业管理
+    if not all([course_id, title, description, duration]):
+        return jsonify({'message': '缺少必要参数', 'result': False}), 400
+
+    try:
+        test_id = test_functions.create_test(course_id, title, description, duration, passing_score)
+        return jsonify({
+            'message': '测试创建成功',
+            'test_id': test_id,
+            'result': True
+        }), 201
+    except Exception as e:
+        return jsonify({'message': f'创建失败: {str(e)}', 'result': False}), 500
+
+# 根据测试ID获取测试信息
+# @app.route('/tests/<int:test_id>', methods=['GET'])
+# def get_test_by_id(test_id):
+#     try:
+#         test = test_functions.get_test_by_id(test_id)
+#         if not test:
+#             return jsonify({'message': '测试不存在', 'result': False}), 404
+#         return jsonify({
+#             'message': '获取成功',
+#             'test': test,
+#             'result': True
+#         }), 200
+#     except Exception as e:
+#         return jsonify({'message': f'获取失败: {str(e)}', 'result': False}), 500
+
+# 获取课程的所有测试
+@app.route('/courses/<int:course_id>/tests', methods=['GET'])
+def get_course_tests(course_id):
+    try:
+        tests = test_functions.get_course_tests(course_id)
+        return jsonify({
+            'message': '获取成功',
+            'tests': tests,
+            'result': True
+        }), 200
+    except Exception as e:
+        return jsonify({'message': f'获取失败: {str(e)}', 'result': False}), 500
+
+# 根据测试ID删除测试
+@app.route('/tests/<int:test_id>', methods=['DELETE'])
+def delete_test_by_id(test_id):
+    try:
+        success = test_functions.delete_test_by_id(test_id)
+        if success:
+            return jsonify({'message': '测试删除成功', 'result': True}), 200
+        else:
+            return jsonify({'message': '测试不存在', 'result': False}), 404
+    except Exception as e:
+        return jsonify({'message': f'删除失败: {str(e)}', 'result': False}), 500
+# 获取所有测试题目的路由
+@app.route('/tests/<int:test_id>/questions', methods=['GET'])
+def get_test_questions(test_id):
+    """获取测试的所有题目"""
+    try:
+        questions = test_functions.get_test_questions(test_id)
+        if not questions:
+            return jsonify({'message': '测试题目不存在', 'result': False}), 404
+        return jsonify({
+            'message': '获取成功',
+            'questions': questions,
+            'result': True
+        }), 200
+    except Exception as e:
+        return jsonify({'message': f'获取失败: {str(e)}', 'result': False}), 500
+# 添加测试题目的路由
+@app.route('/tests/<int:test_id>/questions', methods=['POST'])
+def add_test_question(test_id):
+    """添加测试题目"""
+    data = request.get_json()
+    question_text = data.get('question_text')
+    question_type = data.get('question_type')
+    options = data.get('options')  # 仅对选择题有效
+    correct_answer = data.get('correct_answer')
+    if not all([question_text, question_type, correct_answer]):
+        return jsonify({'message': '缺少必要参数', 'result': False}), 400
+    try:
+        question_id = test_functions.add_test_question(test_id, question_text, question_type, options, correct_answer)
+        return jsonify({
+            'message': '测试题目添加成功',
+            'question_id': question_id,
+            'result': True
+        }), 201
+    except Exception as e:
+        return jsonify({'message': f'添加测试题目失败: {str(e)}', 'result': False}), 500
+
+
+# 开始测试的路由
+@app.route('/tests/<int:test_id>/start_test', methods=['POST'])
+def api_start_test(test_id):
+    data = request.get_json()
+    student_id = data.get('student_id')
+
+    if not all([test_id, student_id]):
+        return jsonify({'message': '缺少必要参数', 'result': False}), 400
+
+    try:
+        attempt_id = test_functions.start_test(test_id, student_id)
+        return jsonify({
+            'message': '测试开始成功',
+            'attempt_id': attempt_id,
+            'result': True
+        }), 201
+    except Exception as e:
+        return jsonify({'message': f'开始测试失败: {str(e)}', 'result': False}), 500
+    
+
+# 提交测试答案的路由
+@app.route('/tests/submit_test_answer', methods=['POST'])
+def api_submit_test_answer():
+    data = request.get_json()
+    attempt_id = data.get('attempt_id')
+    question_id = data.get('question_id')
+    answer_text = data.get('answer_text')
+
+    if not all([attempt_id, question_id, answer_text]):
+        return jsonify({'message': '缺少必要参数', 'result': False}), 400
+
+    try:
+        answer_id = test_functions.submit_test_answer(attempt_id, question_id, answer_text)
+        if answer_id is None:
+            return jsonify({'message': '题目不存在', 'result': False}), 404
+        return jsonify({
+            'message': '答案提交成功',
+            'answer_id': answer_id,
+            'result': True
+        }), 201
+    except Exception as e:
+        return jsonify({'message': f'提交答案失败: {str(e)}', 'result': False}), 500
+
+# 完成测试的路由
+@app.route('/tests/complete_test', methods=['POST'])
+def api_complete_test():
+    data = request.get_json()
+    attempt_id = data.get('attempt_id')
+
+    if not attempt_id:
+        return jsonify({'message': '缺少必要参数', 'result': False}), 400
+
+    try:
+        success = test_functions.complete_test(attempt_id)
+        if success:
+            return jsonify({'message': '测试完成成功', 'result': True}), 200
+        else:
+            return jsonify({'message': '测试完成失败', 'result': False}), 500
+    except Exception as e:
+        return jsonify({'message': f'完成测试失败: {str(e)}', 'result': False}), 500
+
+
+
+# ____________________________________作业管理______________________________________
 @app.route('/assignments', methods=['POST'])
 def create_assignment():
     data = request.get_json()

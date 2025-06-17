@@ -44,19 +44,19 @@ def get_course_tests(course_id):
             (course_id,)
         )
         return [dict(row) for row in cursor.fetchall()]
-
-def get_test_by_id(test_id):
-    """根据测试ID获取测试信息"""
-    with get_db_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute(
-            """SELECT t.*, c.title as course_title, c.teacher_id
-               FROM tests t
-               JOIN courses c ON t.course_id = c.id
-               WHERE t.id = ?""",
-            (test_id,)
-        )
-        return dict(cursor.fetchone()) if cursor.rowcount > 0 else None
+#有问题
+# def get_test_by_id(test_id):
+#     """根据测试ID获取测试信息"""
+#     with get_db_connection() as conn:
+#         cursor = conn.cursor()
+#         cursor.execute(
+#             """SELECT t.*, c.title as course_title, c.teacher_id
+#                FROM tests t
+#                JOIN courses c ON t.course_id = c.id
+#                WHERE t.id = ?""",
+#             (test_id,)
+#         )
+#         return dict(cursor.fetchone()) if cursor.rowcount > 0 else None
 
 def get_test_questions(test_id):
     """获取测试的所有题目"""
@@ -178,4 +178,25 @@ def get_test_attempt_answers(attempt_id):
                 answer['options'] = json.loads(answer['options'])
             answers.append(answer)
         return answers
-    
+
+def delete_test_by_id(test_id):
+    """根据ID删除测试"""
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            "DELETE FROM tests WHERE id = ?",
+            (test_id,)
+        )
+        conn.commit()
+        return cursor.execute("SELECT changes()").fetchone()[0] > 0
+
+def delete_test_question_by_id(question_id):
+    """根据ID删除测试题"""
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            "DELETE FROM test_questions WHERE id = ?",
+            (question_id,)
+        )
+        conn.commit()
+        return cursor.execute("SELECT changes()").fetchone()[0] > 0
