@@ -11,6 +11,8 @@ import { useRoute } from "vue-router";
 import baseApiUrl from "@/api/baseUrl";
 import InputText from "primevue/inputtext";
 import FloatLabel from "primevue/floatlabel";
+import ScrollTop from 'primevue/scrolltop';
+
 
 const editorValue = ref<string>();
 const titleValue = ref<string>();
@@ -77,7 +79,9 @@ onMounted(async () => {
 </script>
 
 <template>
+  
   <div id="discussion">
+    <ScrollTop target="window"/>
     <Card>
       <template #title>讨论区</template>
       <template #content>
@@ -92,7 +96,7 @@ onMounted(async () => {
           />
           <FloatLabel variant="on">
             <InputText id="on_label" v-model="titleValue" fluid />
-            <label for="on_label">请输入新话题的主题</label>
+            <label for="on_label">请输入新话题主题</label>
           </FloatLabel>
           <Button type="submit" severity="secondary" label="发起新话题" />
         </Form>
@@ -123,6 +127,7 @@ onMounted(async () => {
 }
 .list-leave-active {
   position: absolute;
+  width: 100%;
 }
 
 #discussion {

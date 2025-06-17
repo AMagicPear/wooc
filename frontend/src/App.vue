@@ -13,11 +13,8 @@ import Toast from 'primevue/toast'
 
 <style scoped>
 .main-content {
-  padding-inline: 10px;
+  padding-inline: 20px;
   padding-top: 60px;
-  min-height: 100vh;
-  height: 100vh;
-  overflow: scroll;
-  background-color: var(--color-background-mute);
+  padding-bottom: 20px;
 }
 </style>

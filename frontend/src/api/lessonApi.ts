@@ -21,3 +21,14 @@ export interface CourseResourceItem {
     "resource_type": "video" | "audio" | "document" | "image" | "link",
     "title": string
 }
+
+export interface Exam {
+    "course_id": number,
+    "created_at": string,
+    "description": string,
+    "duration": number,
+    "id": number,
+    "passing_score": number,
+    "question_count": number,
+    "title": string
+}
