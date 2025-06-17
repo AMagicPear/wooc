@@ -26,7 +26,30 @@ const onDiscussionSubmit = async () => {
       content: editorValue.value,
       author_id: accountState.userid,
     };
-    let postRes = await fetch(new URL("discussion", baseApiUrl));
+    let postRes = await fetch(new URL("discussions", baseApiUrl), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(discussion),
+    });
+    let postResult = await postRes.json();
+    if (postResult.result) {
+      toast.add({
+        severity: "success",
+        summary: "提交成功",
+        life: 3000,
+      });
+      titleValue.value = undefined;
+      editorValue.value = undefined;
+      getDiscussions();
+    } else {
+      toast.add({
+        severity: "error",
+        summary: "提交失败",
+        life: 3000,
+      });
+    }
   } else {
     toast.add({
       severity: "warn",
@@ -35,17 +58,21 @@ const onDiscussionSubmit = async () => {
       life: 3000,
     });
   }
-  console.log(discussion);
 };
 
-onMounted(async () => {
+async function getDiscussions() {
   let res = await fetch(new URL(`courses/${courseId}/discussions`, baseApiUrl));
   let allDiscussion = await res.json();
   if (allDiscussion.result) {
     discussions.value = allDiscussion.discussions as Discussion[];
+    console.log(discussions.value);
   } else {
     console.error(allDiscussion.message);
   }
+}
+
+onMounted(async () => {
+  await getDiscussions();
 });
 </script>
 
@@ -65,28 +92,39 @@ onMounted(async () => {
           />
           <FloatLabel variant="on">
             <InputText id="on_label" v-model="titleValue" fluid />
-            <label for="on_label">话题标题</label>
+            <label for="on_label">请输入新话题的主题</label>
           </FloatLabel>
           <Button type="submit" severity="secondary" label="发起新话题" />
         </Form>
       </template>
     </Card>
-    <CommentCard
-      v-for="discussion in discussions"
-      :username="discussion.author_name"
-      :content="discussion.content"
-      :title="discussion.title"
-    />
-    <CommentCard
-      v-for="discussion in discussions"
-      :username="discussion.author_name"
-      :content="discussion.content"
-      :title="discussion.title"
-    />
+    <TransitionGroup name="list">
+      <CommentCard
+        v-for="(discussion, index) in discussions"
+        :key="discussion.id"
+        v-bind="discussion"
+        @delete="discussions?.splice(index, 1)"
+      />
+    </TransitionGroup>
   </div>
 </template>
 
 <style lang="css" scoped>
+.list-move, /* 对移动中的元素应用的过渡 */
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+.list-leave-active {
+  position: absolute;
+}
+
 #discussion {
   margin-top: 20px;
   display: flex;

@@ -10,7 +10,7 @@ export interface Course {
     updated_at: string,
 }
 
-export interface CourseResource {
+export interface CourseResourceItem {
     "course_id": number,
     "created_at": string,
     "description": string,

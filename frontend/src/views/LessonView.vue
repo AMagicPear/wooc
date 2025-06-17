@@ -7,7 +7,7 @@ import { Rating } from "primevue";
 import Card from "primevue/card";
 import { onMounted, ref } from "vue";
 import { accountState } from "@/global/account";
-import baseApiUrl from "@/api/baseUrl";
+import baseApiUrl, { getFile } from "@/api/baseUrl";
 import type { Course } from "@/api/lessonApi";
 const router = useRouter();
 
@@ -26,7 +26,7 @@ onMounted(async () => {
   let data: { result: boolean; course: Course } = await res.json();
   if (data.result) {
     courseInfo.value = data.course
-    courseInfo.value.cover_image = baseApiUrl + 'get_file/' + data.course.cover_image
+    courseInfo.value.cover_image = getFile(data.course.cover_image)
   } else {
     console.error(`加载课程${lessonId}信息失败`);
   }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import LessonCard from '@/components/LessonCard.vue';
 import DefaultImg from "@/assets/pic/685110093414064026.webp"
-import baseApiUrl from '@/api/baseUrl';
+import baseApiUrl, { getFile } from '@/api/baseUrl';
 import { onMounted, ref } from 'vue';
 import type { Course } from '@/api/lessonApi';
 
@@ -11,7 +11,7 @@ onMounted(async () => {
     let response = await fetch(new URL('/courses', baseApiUrl))
     let data: { course: Course[] } = await response.json()
     courses.value = data.course
-    courses.value.forEach(course => course.cover_image = baseApiUrl + 'get_file/' + course.cover_image)
+    courses.value.forEach(course => course.cover_image = getFile(course.cover_image))
     console.log(courses.value)
 })
 </script>

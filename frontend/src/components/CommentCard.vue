@@ -2,40 +2,78 @@
 import Card from "primevue/card";
 import Avatar from "primevue/avatar";
 import Fieldset from "primevue/fieldset";
-
+import Panel from "primevue/panel";
+import { Button, useToast } from "primevue";
 import { computed } from "vue";
-const props = defineProps<{
-  title: string;
-  username: string;
-  content: string;
-}>();
+import getBackgroundColor from "@/util/usernameBgColor";
+import type { Discussion } from "@/api/discussion";
+import baseApiUrl from "@/api/baseUrl";
+const props = defineProps<Discussion>();
+const emit = defineEmits(["delete"]);
+const toast = useToast();
 
-const backgroundColor = computed(() => {
-  let hash = 0;
-  for (let i = 0; i < props.username.length; i++) {
-    hash = props.username.charCodeAt(i) + ((hash << 5) - hash);
+const backgroundColor = computed(() => getBackgroundColor(props.author_name));
+async function deleteComment() {
+  let res = await fetch(new URL(`discussions/${props.id}`, baseApiUrl), {
+    method: "DELETE",
+  });
+  let result = await res.json();
+  if (result) {
+    toast.add({
+      summary: "话题删除成功",
+      severity: "success",
+      life: 3000,
+    });
+    emit("delete");
+  } else {
+    toast.add({ summary: "删除失败", severity: "error" });
   }
-  const hue = Math.abs(hash % 360);
-  return `hsl(${hue}, 70%, 80%)`;
-});
+}
 </script>
 
 <template>
   <Card>
-    <template #title>{{ title }}</template>
+    <template #title>
+      {{ title
+      }}<span v-if="reply_count > 0" style="color: gray">
+        ({{ reply_count }}条回复)</span
+      ></template
+    >
     <template #content>
-      <Fieldset v-for="_ in 3">
-        <template #legend>
+      <Panel toggleable>
+        <template #header>
           <div class="user-identify">
             <Avatar
-              :label="username.charAt(0).toUpperCase()"
+              :label="author_name.charAt(0).toUpperCase()"
               :style="{ backgroundColor }"
             />
-            <span>{{ username }}</span>
+            <span>{{ author_name }}</span>
           </div>
         </template>
-        <p>{{ content }}</p>
-      </Fieldset>
+        <template #icons>
+          <Button
+            severity="danger"
+            icon="pi pi-trash"
+            rounded
+            text
+            @click="deleteComment"
+          />
+        </template>
+        <div v-html="content" />
+        <!-- 回复 -->
+        <Fieldset v-if="reply_count > 0">
+          <template #legend>
+            <div class="user-identify">
+              <Avatar
+                :label="author_name.charAt(0).toUpperCase()"
+                :style="{ backgroundColor }"
+              />
+              <span>{{ author_name }}</span>
+            </div>
+          </template>
+          <div v-html="content" />
+        </Fieldset>
+      </Panel>
     </template>
   </Card>
 </template>
@@ -46,7 +84,6 @@ const backgroundColor = computed(() => {
   align-items: center;
   padding-left: 0.5rem;
   gap: 0.5rem;
-  margin-bottom: 0.6rem;
 }
 
 .lengend-text {
