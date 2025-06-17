@@ -13,15 +13,21 @@ def create_course(title, description, teacher_id, cover_image=None):
 
 def get_course_by_id(course_id):
     """根据课程ID获取课程信息"""
+    course = None
     with get_db_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute("""
-            SELECT c.*, u.username as teacher_name 
-            FROM courses c 
-            JOIN users u ON c.teacher_id = u.id 
-            WHERE c.id = ?
-        """, (course_id,))
-        return dict(cursor.fetchone()) if cursor.rowcount > 0 else None
+        try:
+            cursor.execute("""
+                SELECT c.*, u.username as teacher_name 
+                FROM courses c 
+                JOIN users u ON c.teacher_id = u.id 
+                WHERE c.id = ?
+            """, (course_id,))
+            row = cursor.fetchone()
+            course = dict(row) if row else None
+        finally:
+            cursor.close()
+    return course
 
 def get_all_courses():
     """获取所有课程"""
