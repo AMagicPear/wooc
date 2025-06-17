@@ -11,7 +11,7 @@ import "vidstack/player/ui";
 import type { MediaPlayerElement } from "vidstack/elements";
 import { onMounted, ref } from "vue";
 
-defineProps<{ src: string }>();
+defineProps<{ src?: string }>();
 // import { textTracks } from './tracks';
 
 const player = ref<MediaPlayerElement>();

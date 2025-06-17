@@ -2,32 +2,30 @@
 import { useRoute } from "vue-router";
 import { onMounted, ref } from "vue";
 import VideoPlayer from "@/components/VideoPlayer.vue";
-import Galleria from 'primevue/galleria';
+import Galleria from "primevue/galleria";
 import Card from "primevue/card";
-import TestVideo from "@/assets/2025-06-13 20-52-03.mp4";
 import Breadcrumb from "primevue/breadcrumb";
 import DefaultImg from "@/assets/pic/685110093414064026.webp";
-const lessonId = useRoute().params.id as string;
 import { PhotoService } from "@/api/PhotoService";
+import baseApiUrl from "@/api/baseUrl";
+const videoSrc = ref<string>();
+
+const lessonId = useRoute().params.id as string;
+const mediaType = ref<"img" | "video">("img");
 
 onMounted(() => {
   PhotoService.getImages().then((data) => (images.value = data));
+  videoSrc.value = new URL(
+    "get_file/media/video/test_video.mp4",
+    baseApiUrl
+  ).toString();
 });
 
 const images = ref();
-const responsiveOptions = ref([
-  {
-    breakpoint: "1300px",
-    numVisible: 4,
-  },
-  {
-    breakpoint: "575px",
-    numVisible: 1,
-  },
-]);
 
 onMounted(async () => {
   images.value?.push(DefaultImg);
+  mediaType.value = 'video'
 });
 
 const homeItems = ref([
@@ -63,13 +61,8 @@ const homeItems = ref([
       </template>
 
       <template #content>
-        <VideoPlayer :src="TestVideo" />
-        <!-- <Galleria
-          :value="images"
-          :responsiveOptions="responsiveOptions"
-          :numVisible="5"
-          containerStyle="max-width: 640px"
-        >
+        <VideoPlayer :src="videoSrc" v-show="mediaType == 'video'"/>
+        <Galleria :value="images" v-show="mediaType == 'img'">
           <template #item="slotProps">
             <img
               :src="slotProps.item.itemImageSrc"
@@ -83,7 +76,7 @@ const homeItems = ref([
               :alt="slotProps.item.alt"
             />
           </template>
-        </Galleria> -->
+        </Galleria>
       </template>
     </Card>
   </div>
