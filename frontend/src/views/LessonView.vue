@@ -4,8 +4,9 @@ import ExampleImg from "@/assets/pic/685110093414064026.webp";
 import Button from "primevue/button";
 import JoinCourse from "@/components/icons/JoinCourse.vue";
 import { Rating } from "primevue";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { accountState } from "@/global/account";
+import baseApiUrl from "@/api/baseUrl";
 const router = useRouter();
 
 const lessonId = useRoute().params.id as string;
@@ -16,6 +17,12 @@ function startLearning() {
   // TODO)) 向数据库添加学习课程信息
   console.log(accountState.userid, "开始学习", lessonId);
 }
+
+onMounted(async () => {
+  let res = await fetch(new URL(`/courses/${lessonId}`, baseApiUrl));
+  let data = await res.json()
+  console.log(data)
+});
 </script>
 
 <template lang="pug">
