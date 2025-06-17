@@ -9,3 +9,15 @@ export interface Course {
     title: string,
     updated_at: string,
 }
+
+export interface CourseResource {
+    "course_id": number,
+    "created_at": string,
+    "description": string,
+    "duration": number,
+    "file_path": string,
+    "file_size": number,
+    "id": number,
+    "resource_type": "video" | "audio" | "document" | "image" | "link",
+    "title": string
+}

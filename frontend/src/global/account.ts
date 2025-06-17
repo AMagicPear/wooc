@@ -8,3 +8,9 @@ export const accountState = reactive({
     role: 'none' as UserRole,
     username: undefined as string | undefined
 })
+
+// 调试时默认处于已登录
+accountState.isLoggedIn = true
+accountState.userid = 1
+accountState.role = 'student'
+accountState.username = "perry"

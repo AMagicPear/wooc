@@ -16,7 +16,7 @@ const items = ref([
             {
                 label: '我的课程',
                 icon: 'pi pi-book',
-                route: '/profile/courses'
+                route: '/my-courses'
             }
         ],
     },

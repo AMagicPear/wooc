@@ -3,5 +3,5 @@
 </script>
 
 <template>
-
+    测验
 </template>
