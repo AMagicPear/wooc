@@ -312,10 +312,10 @@ def api_complete_test():
 
 
 # ____________________________________作业管理______________________________________
-@app.route('/assignments', methods=['POST'])
-def create_assignment():
+# 创建作业
+@app.route('/courses/<int:course_id>/assignments', methods=['POST'])
+def create_assignment(course_id):
     data = request.get_json()
-    course_id = data.get('course_id')
     title = data.get('title')
     description = data.get('description')
     deadline = data.get('deadline')
@@ -323,11 +323,107 @@ def create_assignment():
     assignment_id = assignment_functions.create_assignment(course_id, title, description, deadline, max_score)
     return jsonify({'message': '作业创建成功', 'assignment_id': assignment_id}), 201
 
+# 获取课程的所有作业
+@app.route('/courses/<int:course_id>/assignments', methods=['GET'])
+def get_course_assignments(course_id):
+    try:
+        assignments = assignment_functions.get_course_assignments(course_id)
+        return jsonify({
+            'message': '获取成功',
+            'assignments': assignments,
+            'result': True
+        }), 200
+    except Exception as e:
+        return jsonify({'message': f'获取失败: {str(e)}', 'result': False}), 500
+
+#提交作业
+@app.route('/assignments/<int:assignment_id>/submit', methods=['POST'])
+def submit_assignment(assignment_id):
+    data = request.get_json()
+    student_id = data.get('student_id')
+    content = data.get('content')
+    file_path = data.get('file_path')  # 可选参数
+    if not all([student_id, content]):
+        return jsonify({'message': '缺少必要参数', 'result': False}), 400
+    try:
+        submission_id = assignment_functions.submit_assignment(assignment_id, student_id, content, file_path)
+        return jsonify({
+            'message': '作业提交成功',
+            'submission_id': submission_id,
+            'result': True
+        }), 201
+    except Exception as e:
+        return jsonify({'message': f'提交作业失败: {str(e)}', 'result': False}), 500
+    
+# 获取学生的作业提交
+# @app.route('/assignments/<int:assignment_id>/submissions/<int:student_id>', methods=['GET'])
+# def get_student_assignment_submission(assignment_id, student_id):
+#     """获取学生的作业提交"""
+#     try:
+#         submission = assignment_functions.get_student_assignment_submission(assignment_id, student_id)
+#         if not submission:
+#             return jsonify({'message': '作业提交不存在', 'result': False}), 404
+#         return jsonify({
+#             'message': '获取成功',
+#             'submission': submission,
+#             'result': True
+#         }), 200
+#     except Exception as e:
+#         return jsonify({'message': f'获取失败: {str(e)}', 'result': False}), 500
+
+# 获取所有的作业提交
+@app.route('/assignments/<int:assignment_id>/submit', methods=['GET'])
+def get_all_assignment_submissions(assignment_id):
+    """获取作业的所有提交"""
+    try:
+        submissions = assignment_functions.get_assignment_submissions(assignment_id)
+        return jsonify({
+            'message': '获取成功',
+            'submissions': submissions,
+            'result': True
+        }), 200
+    except Exception as e:
+        return jsonify({'message': f'获取失败: {str(e)}', 'result': False}), 500
+
+# 批改作业
+@app.route('/assignments/submit/<int:submission_id>/grade', methods=['POST'])
+def grade_assignment(submission_id):
+    data = request.get_json()
+    score = data.get('score')
+    feedback = data.get('feedback')
+    grader_id = data.get('grader_id')
+    if not all([score, feedback, grader_id]):
+        return jsonify({'message': '缺少必要参数', 'result': False}), 400
+    try:
+        success = assignment_functions.grade_assignment(submission_id, score, feedback, grader_id)
+        if success:
+            return jsonify({'message': '作业批改成功', 'result': True}), 200
+        else:
+            return jsonify({'message': '作业批改失败', 'result': False}), 500
+    except Exception as e:
+        return jsonify({'message': f'批改作业失败: {str(e)}', 'result': False}), 500
+
+
+#获取作业的所有批改
+@app.route('/assignments/submit/<int:assignment_id>/grade', methods=['GET'])
+def get_assignment_grades(assignment_id):
+    """获取作业的所有批改"""
+    try:
+        grades = assignment_functions.get_assignment_grades(assignment_id)
+        return jsonify({
+            'message': '获取成功',
+            'grades': grades,
+            'result': True
+        }), 200
+    except Exception as e:
+        return jsonify({'message': f'获取失败: {str(e)}', 'result': False}), 500
+
+
 
 #______________________________________讨论区________________________________________
 
 @app.route('/discussions', methods=['POST'])
-def api_create_discussion():
+def create_discussion():
     """创建讨论主题"""
     data = request.get_json()
     course_id = data.get('course_id')
@@ -349,7 +445,7 @@ def api_create_discussion():
         return jsonify({'message': f'创建失败: {str(e)}','result':False}), 500
 
 @app.route('/courses/<int:course_id>/discussions', methods=['GET'])
-def api_get_course_discussions(course_id):
+def get_course_discussions(course_id):
     """获取课程的所有讨论主题"""
     try:
         discussions = discussion_functions.get_course_discussions(course_id)
@@ -362,7 +458,7 @@ def api_get_course_discussions(course_id):
         return jsonify({'message': f'获取失败: {str(e)}','result':False}), 500
 
 @app.route('/discussions/<int:discussion_id>', methods=['GET'])
-def api_get_discussion_by_id(discussion_id):
+def get_discussion_by_id(discussion_id):
     """根据讨论ID获取讨论信息"""
     try:
         discussion = discussion_functions.get_discussion_by_id(discussion_id)
@@ -377,7 +473,7 @@ def api_get_discussion_by_id(discussion_id):
         return jsonify({'message': f'获取失败: {str(e)}','result':False}), 500
 
 @app.route('/discussions/<int:discussion_id>/replies', methods=['POST'])
-def api_add_discussion_reply(discussion_id):
+def add_discussion_reply(discussion_id):
     """添加讨论回复"""
     data = request.get_json()
     content = data.get('content')
@@ -402,7 +498,7 @@ def api_add_discussion_reply(discussion_id):
         return jsonify({'message': f'添加失败: {str(e)}','result':False}), 500
 
 @app.route('/discussions/<int:discussion_id>/replies', methods=['GET'])
-def api_get_discussion_replies(discussion_id):
+def get_discussion_replies(discussion_id):
     """获取讨论的所有回复"""
     try:
         # 检查讨论是否存在
@@ -420,7 +516,7 @@ def api_get_discussion_replies(discussion_id):
         return jsonify({'message': f'获取失败: {str(e)}','result':False}), 500
 
 @app.route('/discussions/<int:discussion_id>', methods=['DELETE'])
-def api_delete_discussion_by_id(discussion_id):
+def delete_discussion_by_id(discussion_id):
     """根据讨论ID删除讨论主题"""
     try:
         success = discussion_functions.delete_discussion_by_id(discussion_id)
@@ -432,7 +528,7 @@ def api_delete_discussion_by_id(discussion_id):
         return jsonify({'message': f'删除失败: {str(e)}','result':False}), 500
 
 @app.route('/discussion_replies/<int:reply_id>', methods=['DELETE'])
-def api_delete_discussion_reply_by_id(reply_id):
+def delete_discussion_reply_by_id(reply_id):
     """根据回复ID删除讨论回复"""
     try:
         success = discussion_functions.delete_discussion_reply_by_id(reply_id)

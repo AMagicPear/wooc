@@ -92,3 +92,18 @@ def grade_assignment(submission_id, score, feedback, grader_id):
         conn.commit()
         return cursor.rowcount > 0
     
+
+def get_assignment_grades(assignment_id):
+    """获取作业的所有批改记录"""
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            """SELECT s.*, u.username, u.email
+               FROM assignment_submissions s
+               JOIN users u ON s.grader_id = u.id
+               WHERE s.assignment_id = ? AND s.score IS NOT NULL
+               ORDER BY s.graded_at DESC""",
+            (assignment_id,)
+        )
+        return [dict(row) for row in cursor.fetchall()]
+    
