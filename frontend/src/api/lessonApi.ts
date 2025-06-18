@@ -32,3 +32,13 @@ export interface Exam {
     "question_count": number,
     "title": string
 }
+
+export interface Question {
+    correct_answer: string,
+    id: number,
+    options?: string[],
+    question_text: string,
+    question_type: 'multiple_choice' | 'true_false' | 'short_answer' | 'essay',
+    score: number,
+    test_id: number
+}

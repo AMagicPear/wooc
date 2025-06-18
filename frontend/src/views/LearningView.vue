@@ -6,6 +6,7 @@ import TabList from "primevue/tablist";
 import Tab from "primevue/tab";
 
 const route = useRoute();
+const courseId = route.params.courseid
 const items = [
   {
     label: "公告",
@@ -38,7 +39,7 @@ const items = [
           v-for="tab in items"
           :key="tab.label"
           :value="tab.route"
-          @click="$router.push(tab.route)"
+          @click="$router.push(`/lesson/${courseId}/learn/${tab.route}`)"
         >
           <a class="tab-link">
             <i :class="tab.icon" />

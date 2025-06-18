@@ -11,7 +11,7 @@ import baseApiUrl, { getFile } from "@/api/baseUrl";
 import type { Course } from "@/api/lessonApi";
 const router = useRouter();
 
-const lessonId = useRoute().params.id as string;
+const lessonId = useRoute().params.courseid as string;
 
 const rating = ref(4);
 const courseInfo = ref<Course>()

@@ -16,7 +16,7 @@ import ScrollTop from 'primevue/scrolltop';
 
 const editorValue = ref<string>();
 const titleValue = ref<string>();
-const courseId = Number(useRoute().params.id);
+const courseId = Number(useRoute().params.courseid);
 const discussions = ref<Discussion[]>();
 const toast = useToast();
 const onDiscussionSubmit = async () => {
@@ -28,7 +28,7 @@ const onDiscussionSubmit = async () => {
       content: editorValue.value,
       author_id: accountState.userid,
     };
-    let postRes = await fetch(new URL("discussions", baseApiUrl), {
+    let postRes = await fetch(new URL(`courses/${courseId}/discussions`, baseApiUrl), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

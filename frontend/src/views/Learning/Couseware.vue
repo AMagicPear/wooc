@@ -10,7 +10,7 @@ import baseApiUrl, { getFile } from "@/api/baseUrl";
 import Listbox from "primevue/listbox";
 import type { Course, CourseResourceItem } from "@/api/lessonApi";
 
-const lessonId = useRoute().params.id as string;
+const lessonId = useRoute().params.courseid as string;
 
 const images = ref();
 const courseInfo = ref<Course>();

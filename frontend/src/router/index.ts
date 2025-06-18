@@ -30,13 +30,13 @@ const router = createRouter({
       component: () => import('@/views/MyCourses.vue')
     },
     {
-      path: '/lesson/:id',
+      path: '/lesson/:courseid',
       component: () => import('@/views/LessonView.vue'),
     },
     {
-      path: '/lesson/:id/learn',
+      path: '/lesson/:courseid/learn',
       component: () => import('@/views/LearningView.vue'),
-      redirect: (to) => `${to.params.id}/learn/notice`,
+      redirect: (to) => `${to.params.courseid}/learn/notice`,
       children: [
         {
           path: 'notice',
@@ -53,9 +53,13 @@ const router = createRouter({
         {
           path: 'exam',
           component: () => import('@/views/Learning/Exam.vue')
+        },
+        {
+          path: 'exam/:examid',
+          component: () => import('@/views/Learning/ExamContent.vue')
         }
       ]
-    }
+    },
   ],
 })
 

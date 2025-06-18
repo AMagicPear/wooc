@@ -56,7 +56,7 @@ function onCardClick() {
 
 .lesson-card:hover {
     box-shadow: 0 0 8px rgba(0, 0, 0, .2);
-    transform: scale(1.05);
+    transform: scale(1.02);
 }
 
 .lesson-card img {
