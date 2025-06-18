@@ -56,7 +56,7 @@ function onFormSubmit() {
       })
       break;
     case '注册':
-      fetch(new URL('register', baseApiUrl), {
+      fetch(new URL('/register', baseApiUrl), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

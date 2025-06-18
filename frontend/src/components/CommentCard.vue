@@ -14,7 +14,7 @@ const toast = useToast();
 
 const backgroundColor = computed(() => getBackgroundColor(props.author_name));
 async function deleteComment() {
-  let res = await fetch(new URL(`discussions/${props.id}`, baseApiUrl), {
+  let res = await fetch(new URL(`/discussions/${props.id}`, baseApiUrl), {
     method: "DELETE",
   });
   let result = await res.json();

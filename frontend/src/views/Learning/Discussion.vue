@@ -28,7 +28,7 @@ const onDiscussionSubmit = async () => {
       content: editorValue.value,
       author_id: accountState.userid,
     };
-    let postRes = await fetch(new URL(`courses/${courseId}/discussions`, baseApiUrl), {
+    let postRes = await fetch(new URL(`/courses/${courseId}/discussions`, baseApiUrl), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -63,7 +63,7 @@ const onDiscussionSubmit = async () => {
 };
 
 async function getDiscussions() {
-  let res = await fetch(new URL(`courses/${courseId}/discussions`, baseApiUrl));
+  let res = await fetch(new URL(`/courses/${courseId}/discussions`, baseApiUrl));
   let allDiscussion = await res.json();
   if (allDiscussion.result) {
     discussions.value = allDiscussion.discussions as Discussion[];

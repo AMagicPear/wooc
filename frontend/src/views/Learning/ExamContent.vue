@@ -6,14 +6,21 @@ import { useRoute } from "vue-router";
 
 import Checkbox from "primevue/checkbox";
 
-const examId = Number(useRoute().params.examid);
+const route = useRoute();
+console.log("route", route);
+const examId = Number(route.params.examid);
+const attemptId = Number(route.query.attempt_id);
 
 const questions = ref<Question[]>();
-const currentAnswer = ref<(string | number)[]>();
+const answers = ref<{ [questionId: number]: any }>({}); // 存储答案
+
+const loadQuestions = async () => {
+
+};
 
 onMounted(async () => {
   let data = await (
-    await fetch(new URL(`tests/${examId}/questions`, baseApiUrl))
+    await fetch(new URL(`/tests/${examId}/questions`, baseApiUrl))
   ).json();
   console.log(data);
   if (data) {
@@ -26,13 +33,6 @@ onMounted(async () => {
 
 <template>
   <div v-for="question in questions">
-    <div v-if="question.question_type == 'multiple_choice'">
-      <div v-for="option in question.options">
-        <div>
-          <Checkbox :input-id="option" />
-          <label>{{ option }}</label>
-        </div>
-      </div>
-    </div>
+    <div v-if="question.question_type == 'multiple_choice'"></div>
   </div>
 </template>

@@ -2,15 +2,18 @@
 import baseApiUrl from "@/api/baseUrl";
 import type { Exam } from "@/api/lessonApi";
 import { onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
-import { Divider } from "primevue";
+import { useRoute, useRouter } from "vue-router";
+import { Divider, useToast } from "primevue";
 import Card from "primevue/card";
+import { accountState } from "@/global/account";
 
 const exams = ref<Exam[]>();
 let courseId = useRoute().params.courseid;
+const router = useRouter();
+const toast = useToast();
 
 onMounted(async () => {
-  let res = await fetch(new URL(`courses/${courseId}/tests`, baseApiUrl));
+  let res = await fetch(new URL(`/courses/${courseId}/tests`, baseApiUrl));
   let data = await res.json();
   if (data.result) {
     exams.value = data.tests as Exam[];
@@ -19,18 +22,40 @@ onMounted(async () => {
   }
 });
 
-function enterExam(id: number) {
-  console.log("enterexam", id);
+async function enterExam(id: number) {
+  let startTestRes = await fetch(
+    new URL(`/tests/${id}/start_test`, baseApiUrl),
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        student_id: accountState.userid,
+      }),
+    }
+  );
+  let testStartInfo = await startTestRes.json();
+  console.log(testStartInfo);
+  if (testStartInfo.result) {
+    router.push({
+      name: "examcontent",
+      params: { examid: id },
+      query: { attempt_id: testStartInfo.attempt_id },
+    });
+  } else {
+    toast.add({
+      summary: "开始测试失败",
+      severity: "error",
+      life: 3000,
+    });
+  }
 }
 </script>
 
 <template>
   <div id="exam">
-    <Card
-      v-for="exam in exams"
-      class="exam-card"
-      @click="$router.push('exam/1')"
-    >
+    <Card v-for="exam in exams" class="exam-card" @click="enterExam(exam.id)">
       <template #title
         ><span class="title">{{ exam.title }}</span></template
       >
