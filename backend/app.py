@@ -420,13 +420,13 @@ def get_assignment_grades(assignment_id):
 
 
 
+
 #______________________________________讨论区________________________________________
 
-@app.route('/discussions', methods=['POST'])
-def create_discussion():
+@app.route('/courses/<int:course_id>/discussions', methods=['POST'])
+def create_discussion(course_id):
     """创建讨论主题"""
     data = request.get_json()
-    course_id = data.get('course_id')
     title = data.get('title')
     content = data.get('content')
     author_id = data.get('author_id')

@@ -40,7 +40,8 @@ def get_discussion_by_id(discussion_id):
                WHERE d.id = ?""",
             (discussion_id,)
         )
-        return dict(cursor.fetchone()) if cursor.rowcount > 0 else None
+        row = cursor.fetchone()
+        return dict(row) if row else None
 
 def add_discussion_reply(discussion_id, content, author_id):
     """添加讨论回复"""

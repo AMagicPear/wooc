@@ -36,7 +36,8 @@ def get_assignment_by_id(assignment_id):
                WHERE a.id = ?""",
             (assignment_id,)
         )
-        return dict(cursor.fetchone()) if cursor.rowcount > 0 else None
+        row = cursor.fetchone()
+        return dict(row) if row else None
 
 def submit_assignment(assignment_id, student_id, content=None, file_path=None):
     """提交作业"""
@@ -63,7 +64,8 @@ def get_student_assignment_submission(assignment_id, student_id):
                WHERE s.assignment_id = ? AND s.student_id = ?""",
             (assignment_id, student_id)
         )
-        return dict(cursor.fetchone()) if cursor.rowcount > 0 else None
+        row = cursor.fetchone()
+        return dict(row) if row else None
 
 def get_assignment_submissions(assignment_id):
     """获取作业的所有提交"""
