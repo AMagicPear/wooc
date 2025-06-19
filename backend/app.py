@@ -1,8 +1,7 @@
 from flask import Flask, request, jsonify, send_from_directory, abort,send_file
 import os
-from werkzeug.utils import secure_filename
+# from werkzeug.utils import secure_filename
 from flask_cors import CORS
-import bcrypt
 import util.course_functions as course_functions
 import util.resource_functions as resource_functions
 import util.enrollment_functions as enrollment_functions
@@ -11,6 +10,7 @@ import util.progress_functions as progress_functions
 import util.test_functions as test_functions
 import util.assignment_functions as assignment_functions
 import util.discussion_functions as discussion_functions
+import json
 
 app = Flask(__name__)# 用户管理
 CORS(app)  # 允许跨域访问（前后端分离开发时必须）
@@ -341,18 +341,52 @@ def get_course_assignments(course_id):
         }), 200
     except Exception as e:
         return jsonify({'message': f'获取失败: {str(e)}', 'result': False}), 500
+    
+UPLOAD_FOLDER = 'uploads'
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+#文件上传接口
+@app.route('/upload_file', methods=['POST'])
+def upload_file():
+    try:
+        uploaded_filePaths: dict[str, str] = {} # 记录上传文件名和服务器实际存储路径之间的字典
+        for files in request.files.listvalues():
+            for file in files:
+                filename = file.filename
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(file_path)
+                uploaded_filePaths[filename] = file_path
+
+        return jsonify({
+            'message': '文件上传成功',
+            'file_paths': uploaded_filePaths,
+            'result': True
+        }), 200
+    except Exception as e:
+        print(e)
+        return jsonify({'message': f'上传失败: {str(e)}', 'result': False}), 500
 
 #提交作业
 @app.route('/assignments/<int:assignment_id>/submit', methods=['POST'])
 def submit_assignment(assignment_id):
-    data = request.get_json()
-    student_id = data.get('student_id')
-    content = data.get('content')
-    file_path = data.get('file_path')  # 可选参数
-    if not all([student_id, content]):
-        return jsonify({'message': '缺少必要参数', 'result': False}), 400
     try:
-        submission_id = assignment_functions.submit_assignment(assignment_id, student_id, content, file_path)
+        data = request.get_json()
+        print("收到提交作业请求:")
+        text = data.get('text')
+        student_id = data.get('student_id')
+        file_paths: dict[str,str] = data.get('file_paths')  # 文件展示名对实际路径的映射
+        file_paths_str = json.dumps(file_paths)
+
+        if not all([assignment_id, student_id]):
+            return jsonify({'message': '缺少必要参数', 'result': False}), 400
+        
+        if not any([text, file_paths]):
+            return jsonify({'message': '无作业内容', 'result': False}), 400
+
+        submission_id = assignment_functions.submit_assignment(assignment_id, student_id, text, file_paths_str)
         return jsonify({
             'message': '作业提交成功',
             'submission_id': submission_id,
@@ -360,7 +394,7 @@ def submit_assignment(assignment_id):
         }), 201
     except Exception as e:
         return jsonify({'message': f'提交作业失败: {str(e)}', 'result': False}), 500
-    
+
 # 获取学生的作业提交
 # @app.route('/assignments/<int:assignment_id>/submissions/<int:student_id>', methods=['GET'])
 # def get_student_assignment_submission(assignment_id, student_id):
@@ -546,7 +580,5 @@ def delete_discussion_reply_by_id(reply_id):
         return jsonify({'message': f'删除失败: {str(e)}','result':False}), 500
 
 
-
-
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=2025)
