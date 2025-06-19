@@ -10,12 +10,12 @@ const items = ref([
     label: "个人信息",
     items: [
       {
-        label: "个人主页",
+        label: "个人中心",
         icon: "pi pi-id-card",
         route: "/profile",
       },
       {
-        label: "我的课程",
+        label: "课程管理",
         icon: "pi pi-book",
         route: "/my-courses",
       },

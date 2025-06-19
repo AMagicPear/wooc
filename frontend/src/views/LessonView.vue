@@ -3,21 +3,51 @@ import { useRoute, useRouter } from "vue-router";
 import ExampleImg from "@/assets/pic/685110093414064026.webp";
 import Button from "primevue/button";
 import JoinCourse from "@/components/icons/JoinCourse.vue";
-import { Rating } from "primevue";
+import { Rating, useToast } from "primevue";
 import Card from "primevue/card";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { accountState } from "@/global/account";
 import baseApiUrl, { getFile } from "@/api/baseUrl";
 import type { Course } from "@/api/lessonApi";
 const router = useRouter();
-
-const lessonId = useRoute().params.courseid as string;
+const toast = useToast();
+const lessonId = Number(useRoute().params.courseid);
 
 const rating = ref(4);
-const courseInfo = ref<Course>()
-function startLearning() {
+const courseInfo = ref<Course>();
+async function startLearning() {
+  if (!isEnrolled.value) {
+    let enrollResult = await (
+      await fetch(new URL("/enroll", baseApiUrl), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          student_id: accountState.userid,
+          course_id: lessonId,
+        }),
+      })
+    ).json();
+    if (enrollResult.result) {
+      toast.add({
+        summary: "选课成功",
+        detail: enrollResult.message,
+        severity: "success",
+        life: 3000,
+      });
+      accountState.enrolled.push(lessonId);
+      console.log("添加选课ID: ", enrollResult.enrollment_id);
+    } else {
+      toast.add({
+        summary: "选课失败",
+        detail: enrollResult.message,
+        severity: "error",
+      });
+    }
+  }
+
   router.push(`/lesson/${lessonId}/learn`);
-  // TODO)) 向数据库添加学习课程信息
   console.log(accountState.userid, "开始学习", lessonId);
 }
 
@@ -25,12 +55,18 @@ onMounted(async () => {
   let res = await fetch(new URL(`/courses/${lessonId}`, baseApiUrl));
   let data: { result: boolean; course: Course } = await res.json();
   if (data.result) {
-    courseInfo.value = data.course
-    courseInfo.value.cover_image = getFile(data.course.cover_image)
+    courseInfo.value = data.course;
+    courseInfo.value.cover_image = getFile(data.course.cover_image);
   } else {
     console.error(`加载课程${lessonId}信息失败`);
   }
 });
+
+const isEnrolled = computed(() =>
+  accountState.enrolled.some((courseId) => courseId == lessonId)
+);
+
+const buttonText = computed(() => (isEnrolled.value ? "继续学习" : "加入课程"));
 </script>
 
 <template lang="pug">
@@ -43,7 +79,7 @@ onMounted(async () => {
       Rating(v-model="rating" readonly)
       Button(@click="startLearning" rounded)
         JoinCourse(style="width: 20px;height: 20px;")
-        | 开始学习
+        | {{ buttonText }}
   Card
     template(#title) 课程概述
     template(#content) {{ courseInfo?.description }}
@@ -59,7 +95,7 @@ onMounted(async () => {
   gap: 20px;
 }
 
-.lesson-header{
+.lesson-header {
   border-radius: var(--card-border-radius);
   background-color: var(--color-background);
   padding: 20px;

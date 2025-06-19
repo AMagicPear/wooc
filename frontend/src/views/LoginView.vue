@@ -10,7 +10,7 @@ import FloatLabel from 'primevue/floatlabel'
 import Password from 'primevue/password'
 import { useToast } from 'primevue/usetoast'
 
-import { accountState } from '@/global/account'
+import { accountState, getEnrolled } from '@/global/account'
 import { useRouter } from 'vue-router'
 
 const username = ref('')
@@ -45,6 +45,7 @@ function onFormSubmit() {
           accountState.role = data.user.role
           accountState.userid = data.user.id
           accountState.username = username.value
+          getEnrolled()
           router.push('/')
         }
         toast.add({
