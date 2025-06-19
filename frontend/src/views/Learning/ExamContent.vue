@@ -119,11 +119,15 @@ const submitExamSheet = () => {
       console.log("全部答案提交成功", results);
       fetch(`${baseApiUrl}/tests/complete_test`, {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ attempt_id: attemptId }),
       }).then((res) => {
         res.json().then((j) => {
           toast.add({
-            summary: j.message,
+            summary: res.ok ? "提交成功" : "提交失败",
+            detail: j.message,
             severity: res.ok ? "success" : "error",
             life: 3000,
           });

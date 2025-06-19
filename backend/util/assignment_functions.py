@@ -1,4 +1,5 @@
 from util.db_connection import get_db_connection
+import json
 
 def create_assignment(course_id, title, description, deadline, max_score=100):
     """创建作业"""
@@ -39,7 +40,7 @@ def get_assignment_by_id(assignment_id):
         row = cursor.fetchone()
         return dict(row) if row else None
 
-def submit_assignment(assignment_id, student_id, content=None, file_path=None):
+def submit_assignment(assignment_id, student_id, content=None, file_paths=None):
     """提交作业"""
     with get_db_connection() as conn:
         cursor = conn.cursor()
@@ -47,7 +48,7 @@ def submit_assignment(assignment_id, student_id, content=None, file_path=None):
             """INSERT INTO assignment_submissions 
                (assignment_id, student_id, content, file_path, submitted_at) 
                VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)""",
-            (assignment_id, student_id, content, file_path)
+            (assignment_id, student_id, content, json.dumps(file_paths))
         )
         conn.commit()
         return cursor.lastrowid

@@ -406,7 +406,6 @@ def submit_assignment(assignment_id):
         text = data.get('text')
         student_id = data.get('student_id')
         file_paths: dict[str,str] = data.get('file_paths')  # 文件展示名对实际路径的映射
-        file_paths_str = json.dumps(file_paths)
 
         if not all([assignment_id, student_id]):
             return jsonify({'message': '缺少必要参数', 'result': False}), 400
@@ -414,7 +413,7 @@ def submit_assignment(assignment_id):
         if not any([text, file_paths]):
             return jsonify({'message': '无作业内容', 'result': False}), 400
 
-        submission_id = assignment_functions.submit_assignment(assignment_id, student_id, text, file_paths_str)
+        submission_id = assignment_functions.submit_assignment(assignment_id, student_id, text, file_paths)
         return jsonify({
             'message': '作业提交成功',
             'submission_id': submission_id,

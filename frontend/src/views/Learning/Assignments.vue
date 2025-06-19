@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Card, useToast } from "primevue";
-import type { Assignment } from "@/api/lessonApi";
+import type { Assignment, AssignmentSubmission } from "@/api/lessonApi";
 import { ref, onMounted, watch } from "vue";
 import baseApiUrl from "@/api/baseUrl";
 import { useRoute } from "vue-router";
@@ -8,13 +8,18 @@ import Editor from "primevue/editor";
 import Button from "primevue/button";
 import { Form, type FormSubmitEvent } from "@primevue/forms";
 import FileUpload, { type FileUploadUploadEvent } from "primevue/fileupload";
+import Dialog from "primevue/dialog";
 import { accountState } from "@/global/account"; // 引入账号状态
 
 const assignments = ref<Assignment[]>();
+const dialogVisible = ref<boolean>(false);
 const toast = useToast();
 let courseId = useRoute().params.courseid;
 // 存储每个作业对应的文件路径，一级索引为作业ID，二级索引为本地的文件名称
 const filePaths: Record<number, Record<string, string>> = {};
+// 存储每个作业的完成状态
+const isComplete = ref<Record<number, boolean>>({});
+const submitReadyContent = ref<AssignmentSubmission>();
 
 onMounted(async () => {
   let res = await fetch(
@@ -27,6 +32,7 @@ onMounted(async () => {
   } else {
     console.error(data.result);
   }
+  // 还要获取作业是否已完成
 });
 
 const onUpload = (event: FileUploadUploadEvent, assignmentId: number) => {
@@ -78,10 +84,47 @@ const onRemoveUploadedFile = (event: any, assignmentId: number) => {
   console.log("文件路径已更新:", filePaths);
 };
 
-const submitAssignment = async (
-  event: FormSubmitEvent,
-  assignmentId: number
-) => {
+const submitAssignment = async () => {
+  if (!submitReadyContent.value) {
+    console.error("提交内容为空");
+    return;
+  }
+  let res = await fetch(
+    `${baseApiUrl}/assignments/${submitReadyContent.value.assignment_id}/submit`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        text: submitReadyContent.value.text,
+        file_paths: submitReadyContent.value.file_paths,
+        student_id: submitReadyContent.value.student_id,
+      }),
+    }
+  );
+  console.log("已提交：", submitReadyContent.value);
+  let data = await res.json();
+  if (data.result) {
+    toast.add({
+      summary: "提交成功",
+      detail: "作业提交成功",
+      severity: "success",
+      life: 3000,
+    });
+    isComplete.value[submitReadyContent.value.assignment_id] = true;
+  } else {
+    toast.add({
+      summary: "提交失败",
+      detail: data.message,
+      severity: "error",
+      life: 3000,
+    });
+  }
+  dialogVisible.value = false;
+};
+
+const openSubmitDialog = (event: FormSubmitEvent, assignmentId: number) => {
   console.log("正在尝试提交作业，初始信息：", assignmentId, event);
   let text = event.values.text as string;
   let file_paths: Record<string, string> = filePaths[assignmentId];
@@ -94,34 +137,13 @@ const submitAssignment = async (
     });
     return;
   }
-  console.log("提交作业，作业内容：", text, "文件路径：", file_paths);
-  let res = await fetch(`${baseApiUrl}/assignments/${assignmentId}/submit`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      text,
-      file_paths,
-      student_id: accountState.userid,
-    }),
-  });
-  let data = await res.json();
-  if (data.result) {
-    toast.add({
-      summary: "提交成功",
-      detail: "作业提交成功",
-      severity: "success",
-      life: 3000,
-    });
-  } else {
-    toast.add({
-      summary: "提交失败",
-      detail: data.message,
-      severity: "error",
-      life: 3000,
-    });
-  }
+  submitReadyContent.value = {
+    assignment_id: assignmentId,
+    text,
+    file_paths,
+    student_id: accountState.userid,
+  };
+  dialogVisible.value = true;
 };
 </script>
 
@@ -135,7 +157,7 @@ const submitAssignment = async (
         {{ assignment.description }}
       </template>
       <template #content>
-        <Form @submit="submitAssignment($event, assignment.id)">
+        <Form v-if="!isComplete[assignment.id]" @submit="openSubmitDialog($event, assignment.id)">
           <Editor name="text" editor-style="height: 120px" />
           <div
             style="
@@ -165,6 +187,7 @@ const submitAssignment = async (
             <Button label="提交作业" type="submit" />
           </div>
         </Form>
+        <p v-else>已完成</p>
       </template>
       <template #footer>
         <div class="info">
@@ -174,6 +197,40 @@ const submitAssignment = async (
       </template>
     </Card>
   </div>
+  <Dialog v-model:visible="dialogVisible" header="确认提交作业吗？">
+    <template #default>
+      <div>
+        <div v-if="submitReadyContent?.text">
+          <p>当前已填写正文内容：</p>
+          <div v-html="submitReadyContent?.text"></div>
+        </div>
+        <div v-if="submitReadyContent?.file_paths">
+          <p>已上传文件：</p>
+          <ul>
+            <li v-for="(path, name) in submitReadyContent.file_paths">
+              {{ name }}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </template>
+    <template #footer>
+      <Button
+        label="返回"
+        text
+        severity="secondary"
+        @click="dialogVisible = false"
+        autofocus
+      />
+      <Button
+        label="提交"
+        outlined
+        severity="secondary"
+        @click="submitAssignment()"
+        autofocus
+      />
+    </template>
+  </Dialog>
 </template>
 
 <style lang="css" scoped>

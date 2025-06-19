@@ -52,3 +52,10 @@ export interface Assignment {
     max_score: number,
     title: string
 }
+
+export interface AssignmentSubmission {
+    assignment_id: number;
+    text: string;
+    file_paths: Record<string, string>;
+    student_id: number;
+}
