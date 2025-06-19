@@ -172,21 +172,21 @@ def create_test():
     except Exception as e:
         return jsonify({'message': f'创建失败: {str(e)}', 'result': False}), 500
 
-# TODO)) 这个API最好还是恢复一下，不然进了测验不知道在做什么测验只知道题目
+
 # 根据测试ID获取测试信息
-# @app.route('/tests/<int:test_id>', methods=['GET'])
-# def get_test_by_id(test_id):
-#     try:
-#         test = test_functions.get_test_by_id(test_id)
-#         if not test:
-#             return jsonify({'message': '测试不存在', 'result': False}), 404
-#         return jsonify({
-#             'message': '获取成功',
-#             'test': test,
-#             'result': True
-#         }), 200
-#     except Exception as e:
-#         return jsonify({'message': f'获取失败: {str(e)}', 'result': False}), 500
+@app.route('/tests/<int:test_id>', methods=['GET'])
+def get_test_by_id(test_id):
+    try:
+        test = test_functions.get_test_by_id(test_id)
+        if not test:
+            return jsonify({'message': '测试不存在', 'result': False}), 404
+        return jsonify({
+            'message': '获取成功',
+            'test': test,
+            'result': True
+        }), 200
+    except Exception as e:
+        return jsonify({'message': f'获取失败: {str(e)}', 'result': False}), 500
 
 # 获取课程的所有测试
 @app.route('/courses/<int:course_id>/tests', methods=['GET'])
@@ -275,11 +275,11 @@ def api_submit_test_answer():
     data: dict[str, any] = request.get_json()
     attempt_id = data.get('attempt_id')
     question_id = data.get('question_id')
-    # answer_text = data.get('answer_text')
+    answer = data.get('answer')
     # TODO)) 这里需要调整answer_text为answer，并且接收可能的两种类型
-    # 对于multiple_choice和short_answer类型的问题，answer为str类型
+    # 对于short_answer类型的问题，answer为str类型
     # 对于true_false和multiple_choice类型的问题，answer为list[int]类型
-    answer: list[int] | str = data['answer']
+    # answer: list[int] | str = data['answer']
 
     if not all([attempt_id, question_id, answer]):
         return jsonify({'message': '缺少必要参数', 'result': False}), 400
@@ -315,6 +315,34 @@ def api_complete_test():
     except Exception as e:
         return jsonify({'message': f'完成测试失败: {str(e)}', 'result': False}), 500
 
+#获取测试答卷的所有提交
+@app.route('/tests/<int:test_id>/attempts', methods=['GET'])
+def get_test_attempts(test_id):
+    """获取测试的所有答卷提交"""
+    try:
+        attempts = test_functions.get_test_attempts(test_id)
+        return jsonify({
+            'message': '获取成功',
+            'attempts': attempts,
+            'result': True
+        }), 200
+    except Exception as e:
+        return jsonify({'message': f'获取失败: {str(e)}', 'result': False}), 500
+    
+
+#获取测试提交的所有答案
+@app.route('/tests/attempts/<int:attempt_id>/answers', methods=['GET'])
+def get_test_attempt_answers(attempt_id):
+    """获取测试提交的所有答案"""
+    try:
+        answers = test_functions.get_test_attempt_answers(attempt_id)
+        return jsonify({
+            'message': '获取成功',
+            'answers': answers,
+            'result': True
+        }), 200
+    except Exception as e:
+        return jsonify({'message': f'获取失败: {str(e)}', 'result': False}), 500
 
 
 # ____________________________________作业管理______________________________________

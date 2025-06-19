@@ -20,6 +20,7 @@ def add_test_question(test_id, question_text, question_type, options, correct_an
         cursor = conn.cursor()
         # 将选项转换为JSON字符串
         options_json = json.dumps(options) if options else None
+        correct_answer = json.dumps(correct_answer) if isinstance(correct_answer, list) else correct_answer
         
         cursor.execute(
             """INSERT INTO test_questions 
@@ -44,19 +45,20 @@ def get_course_tests(course_id):
             (course_id,)
         )
         return [dict(row) for row in cursor.fetchall()]
-#有问题
-# def get_test_by_id(test_id):
-#     """根据测试ID获取测试信息"""
-#     with get_db_connection() as conn:
-#         cursor = conn.cursor()
-#         cursor.execute(
-#             """SELECT t.*, c.title as course_title, c.teacher_id
-#                FROM tests t
-#                JOIN courses c ON t.course_id = c.id
-#                WHERE t.id = ?""",
-#             (test_id,)
-#         )
-#         return dict(cursor.fetchone()) if cursor.rowcount > 0 else None
+
+def get_test_by_id(test_id):
+    """根据测试ID获取测试信息"""
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            """SELECT t.*, c.title as course_title, c.teacher_id
+               FROM tests t
+               JOIN courses c ON t.course_id = c.id
+               WHERE t.id = ?""",
+            (test_id,)
+        )
+        row = cursor.fetchone()
+        return dict(row) if row else None
 
 def get_test_questions(test_id):
     """获取测试的所有题目"""
@@ -91,7 +93,7 @@ def start_test(test_id, student_id):
         conn.commit()
         return cursor.lastrowid
 
-def submit_test_answer(attempt_id, question_id, answer_text):
+def submit_test_answer(attempt_id, question_id, answer):
     """提交测试答案"""
     with get_db_connection() as conn:
         cursor = conn.cursor()
@@ -101,19 +103,34 @@ def submit_test_answer(attempt_id, question_id, answer_text):
             (question_id,)
         )
         question = cursor.fetchone()
-        
         if not question:
             return None
         
+        correct_answer = question['correct_answer']
+
+        try:
+        # 尝试反序列化
+            if isinstance(correct_answer, str):
+                correct_answer = json.loads(correct_answer)
+        except json.JSONDecodeError:
+        # 若不是有效的 JSON 格式，则保持原样
+            pass
+
         # 判断答案是否正确
-        is_correct = answer_text == question['correct_answer']
+        if isinstance(correct_answer, list):
+            # 如果正确答案是列表，检查是否为提交的答案
+            is_correct = set(correct_answer) == set(answer)
+        else:
+            # 如果正确答案是单个值，直接比较
+            is_correct = answer == correct_answer
+
         score = question['score'] if is_correct else 0
         
         cursor.execute(
             """INSERT INTO test_answers 
                (attempt_id, question_id, answer_text, is_correct, score) 
                VALUES (?, ?, ?, ?, ?)""",
-            (attempt_id, question_id, answer_text, is_correct, score)
+            (attempt_id, question_id, json.dumps(answer), is_correct, score)
         )
         conn.commit()
         return cursor.lastrowid
@@ -176,8 +193,25 @@ def get_test_attempt_answers(attempt_id):
             # 将选项从JSON字符串转换回Python对象
             if answer['options']:
                 answer['options'] = json.loads(answer['options'])
+                answer['correct_answer'] = json.loads(answer['correct_answer']) if answer['correct_answer'] else None
             answers.append(answer)
         return answers
+
+def get_test_attempts(test_id):
+    """获取测试的所有答卷"""
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            SELECT * 
+            FROM test_attempts 
+            WHERE test_id = ?
+
+            """,
+            (test_id,)
+        )
+        return [dict(row) for row in cursor.fetchall()]
+
 
 def delete_test_by_id(test_id):
     """根据ID删除测试"""
