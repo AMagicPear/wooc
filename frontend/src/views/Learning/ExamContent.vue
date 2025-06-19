@@ -10,6 +10,8 @@ import Card from "primevue/card";
 import Divider from "primevue/divider";
 import { Button, RadioButton, useToast } from "primevue";
 import Editor from "primevue/editor";
+import router from "@/router";
+import { useTimer } from "vue-timer-hook";
 
 const route = useRoute();
 const toast = useToast();
@@ -36,7 +38,7 @@ const progress = computed(() => {
   return (count / questions.value.length) * 100;
 });
 
-// TODO)) 暂无法获取信息
+// [ERROR] 暂无法获取信息
 const loadExamInfo = async () => {
   try {
     const res = await fetch(`${baseApiUrl}/tests/${examId}`);
@@ -68,12 +70,17 @@ const loadQuestions = async () => {
   }
 };
 
+const time = new Date();
+time.setSeconds(time.getSeconds() + 600); // 根据题目的时间来定
+const timer = useTimer(time.getTime(), true);
+
 onMounted(async () => {
   await loadExamInfo();
   await loadQuestions();
 });
 
 const submitExamSheet = () => {
+  // 检验题目是否全部正常完成
   console.log("待提交信息", answers.value);
   if (progress.value < 100 || !questions.value || !answers.value) {
     toast.add({
@@ -84,6 +91,7 @@ const submitExamSheet = () => {
     });
     return;
   }
+  // 生成所有题目的提交POST
   let submits: Promise<any>[] = [];
   questions.value.forEach((q) =>
     submits.push(
@@ -105,9 +113,25 @@ const submitExamSheet = () => {
       })
     )
   );
+  // 提交答案并完成测试
   Promise.all(submits)
-      .then(results => console.log(results))
-      .catch(error => console.error(error))
+    .then((results) => {
+      console.log("全部答案提交成功", results);
+      fetch(`${baseApiUrl}/tests/complete_test`, {
+        method: "POST",
+        body: JSON.stringify({ attempt_id: attemptId }),
+      }).then((res) => {
+        res.json().then((j) => {
+          toast.add({
+            summary: j.message,
+            severity: res.ok ? "success" : "error",
+            life: 3000,
+          });
+          if (res.ok) router.back();
+        });
+      });
+    })
+    .catch((error) => console.error(error));
 };
 </script>
 
@@ -117,6 +141,14 @@ const submitExamSheet = () => {
     <Card style="margin-block: 20px">
       <!-- <template #title>{{ examInfo?.title }}</template>
       <template #subtitle>{{ examInfo?.description }}</template> -->
+      <template #subtitle>
+        <p>{{ examInfo?.description }}</p>
+        <p style="text-align: center">
+          剩余时间：{{ timer.minutes.value.toString().padStart(2, "0") }}:{{
+            timer.seconds.value.toString().padStart(2, "0")
+          }}
+        </p>
+      </template>
       <template #content>
         <div v-for="question in questions" :key="question.id" class="question">
           <Divider align="left" type="solid"
@@ -151,11 +183,11 @@ const submitExamSheet = () => {
             class="choice-group"
           >
             <div class="choice">
-              <RadioButton v-model="answers[question.id]" :value="1" />
+              <RadioButton v-model="answers[question.id]" :value="[1]" />
               <label>正确</label>
             </div>
             <div class="choice">
-              <RadioButton v-model="answers[question.id]" :value="0" />
+              <RadioButton v-model="answers[question.id]" :value="[0]" />
               <label>错误</label>
             </div>
           </div>
