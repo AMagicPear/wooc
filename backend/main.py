@@ -94,8 +94,9 @@ def main():
     
     # 示例：添加测试题目
     question_id1 = test.add_test_question(test_id, "Python中如何定义一个函数？", "short_answer", None, "def 函数名(参数):")
-    question_id2 = test.add_test_question(test_id, "以下哪个是Python的内置数据类型？", "multiple_choice", ["int", "float", "list", "all"], "all")
-    
+    question_id2 = test.add_test_question(test_id, "以下哪个是Python的内置数据类型？", "multiple_choice", ["int", "float", "list", "all"], ["all"])
+    question_id3 = test.add_test_question(test_id, "对吗？", "true_false", ["true", "false"], "true")
+    question_id4 = test.add_test_question(test_id, "简答", "essay", None, "Python是一种解释型语言，具有动态类型和自动内存管理等特点。")
     # 示例：开始测试
     attempt_id = test.start_test(test_id, student_id)
     if attempt_id:
@@ -105,7 +106,9 @@ def main():
     
     # 示例：提交测试答案
     test.submit_test_answer(attempt_id, question_id1, "def function():")
-    test.submit_test_answer(attempt_id, question_id2, "all")
+    test.submit_test_answer(attempt_id, question_id2, ["all"])
+    test.submit_test_answer(attempt_id, question_id3, "true")
+    test.submit_test_answer(attempt_id, question_id4, "Python是一种解释型语言，具有动态类型和自动内存管理等特点。")
     
     # 示例：完成测试
     completed = test.complete_test(attempt_id)
