@@ -4,18 +4,22 @@ import { useRoute } from "vue-router";
 import Tabs from "primevue/tabs";
 import TabList from "primevue/tablist";
 import Tab from "primevue/tab";
+import IconBooksStack from "@/components/icons/IconBooksStack.vue";
+import IconMedia from "@/components/icons/IconMedia.vue";
+import IconHat from "@/components/icons/IconHat.vue";
+import IconGroup from "@/components/icons/IconGroup.vue";
 
 const route = useRoute();
 const courseId = route.params.courseid;
 const items = [
   {
     label: "公告",
-    icon: "pi pi-home",
+    c_icon: IconHat,
     route: "notice",
   },
   {
     label: "课件",
-    icon: "pi pi-star",
+    c_icon: IconMedia,
     route: "courseware",
   },
   {
@@ -25,12 +29,12 @@ const items = [
   },
   {
     label: "作业",
-    icon: "",
+    c_icon: IconBooksStack,
     route: "assignments",
   },
   {
     label: "讨论区",
-    icon: "pi pi-star",
+    c_icon: IconGroup,
     route: "discussion",
   },
 ];
@@ -47,7 +51,8 @@ const items = [
           @click="$router.push(`/lesson/${courseId}/learn/${tab.route}`)"
         >
           <a class="tab-link">
-            <i :class="tab.icon" />
+            <i v-if="tab.icon" :class="tab.icon" />
+            <component v-else-if="tab.c_icon" :is="tab.c_icon" style="max-width: 20px; max-height: 20px;"/>
             <span>{{ tab.label }}</span>
           </a>
         </Tab>
