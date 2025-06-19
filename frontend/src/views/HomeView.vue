@@ -18,7 +18,7 @@ onMounted(async () => {
 <template lang="pug">
     h2 →🧱精品课
     .lesson-grid
-      LessonCard(v-for="course in courses" :id="course.id" :title="course.title" :imgsrc="course.cover_image" :teacher="course.teacher_name")
+      LessonCard(v-for="course in courses" v-bind="course")
 </template>
 
 <style lang="css" scoped>

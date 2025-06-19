@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { useRoute} from "vue-router";
+import { useRoute } from "vue-router";
 
 import Tabs from "primevue/tabs";
 import TabList from "primevue/tablist";
 import Tab from "primevue/tab";
 
 const route = useRoute();
-const courseId = route.params.courseid
+const courseId = route.params.courseid;
 const items = [
   {
     label: "公告",
@@ -21,7 +21,12 @@ const items = [
   {
     label: "测验",
     icon: "pi pi-pencil",
-    route: "exam"
+    route: "exam",
+  },
+  {
+    label: "作业",
+    icon: "",
+    route: "assignments",
   },
   {
     label: "讨论区",

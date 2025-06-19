@@ -1,3 +1,4 @@
+import { accountState } from '@/global/account'
 import HomeView from '@/views/HomeView.vue'
 import Notice from '@/views/Learning/Notice.vue'
 import { createRouter, createWebHistory } from 'vue-router'
@@ -24,10 +25,12 @@ const router = createRouter({
       path: '/profile',
       name: 'profile',
       component: () => import('@/views/Profile.vue'),
+      meta: { requiresAuth: true }
     },
     {
       path: '/my-courses',
-      component: () => import('@/views/MyCourses.vue')
+      component: () => import('@/views/MyCourses.vue'),
+      meta: { requiresAuth: true }
     },
     {
       path: '/lesson/:courseid',
@@ -36,6 +39,7 @@ const router = createRouter({
     {
       path: '/lesson/:courseid/learn',
       component: () => import('@/views/LearningView.vue'),
+      meta: { requiresAuth: true },
       redirect: (to) => `${to.params.courseid}/learn/notice`,
       children: [
         {
@@ -58,10 +62,23 @@ const router = createRouter({
           path: 'exam/:examid',
           name: 'examcontent',
           component: () => import('@/views/Learning/ExamContent.vue'),
+        },
+        {
+          path: 'assignments',
+          component: () => import('@/views/Learning/Assignments.vue')
         }
       ]
     },
   ],
+})
+
+router.beforeEach((to, from) => {
+  if (to.meta.requiresAuth && !accountState.isLoggedIn) {
+    return {
+      path: '/login',
+      query: { redirect: to.fullPath }
+    }
+  }
 })
 
 export default router

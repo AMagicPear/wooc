@@ -1,92 +1,107 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
-import Button from 'primevue/button'
-import { InputText } from 'primevue'
-import { Form } from '@primevue/forms'
-import WoocLogo from '@/assets/pic/wooc-logo.png'
-import baseApiUrl from '@/api/baseUrl'
-import SelectButton from 'primevue/selectbutton';
-import FloatLabel from 'primevue/floatlabel'
-import Password from 'primevue/password'
-import { useToast } from 'primevue/usetoast'
+import { onMounted, ref } from "vue";
+import Button from "primevue/button";
+import { InputText } from "primevue";
+import { Form } from "@primevue/forms";
+import WoocLogo from "@/assets/pic/wooc-logo.png";
+import baseApiUrl from "@/api/baseUrl";
+import SelectButton from "primevue/selectbutton";
+import FloatLabel from "primevue/floatlabel";
+import Password from "primevue/password";
+import { useToast } from "primevue/usetoast";
 
-import { accountState, getEnrolled } from '@/global/account'
-import { useRouter } from 'vue-router'
+import { accountState, getEnrolled } from "@/global/account";
+import { useRoute, useRouter } from "vue-router";
 
-const username = ref('')
-const password = ref('')
-const email = ref('')
+const username = ref("");
+const password = ref("");
+const email = ref("");
 // const message = ref('')
 
-const selected = ref<'student' | 'teacher'>('student')
-const states = ['注册', '登录']
-const state = ref(states[1])
-const router = useRouter()
+const selected = ref<"student" | "teacher">("student");
+const states = ["注册", "登录"];
+const state = ref(states[1]);
+const router = useRouter();
+const route = useRoute();
 
-const toast = useToast()
+const toast = useToast();
 
+onMounted(() => {
+  if (route.query.redirect) {
+    toast.add({
+      summary: "非法操作",
+      detail: "尚未登录，请首先登录",
+      severity: "info",
+    });
+  }
+});
 function onFormSubmit() {
   switch (state.value) {
-    case '登录':
-      fetch(new URL('login', baseApiUrl), {
-        method: 'POST',
+    case "登录":
+      fetch(new URL("login", baseApiUrl), {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          username: username.value,
-          password: password.value,
-          role: selected.value
-        })
-      }).then(res => res.json()).then(data => {
-        console.log(data)
-        if (data.result == true) {
-          accountState.isLoggedIn = true
-          accountState.role = data.user.role
-          accountState.userid = data.user.id
-          accountState.username = username.value
-          getEnrolled()
-          router.push('/')
-        }
-        toast.add({
-          severity: data.result ? 'success' : 'warn',
-          summary: '登录结果',
-          detail: data.message,
-          life: 3000
-        })
-      })
-      break;
-    case '注册':
-      fetch(new URL('/register', baseApiUrl), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           username: username.value,
           password: password.value,
           role: selected.value,
-          email: email.value
-        })
-      }).then(res => res.json()).then(data => {
-        console.log(data)
-        toast.add({
-          severity: 'info',
-          summary: '注册结果',
-          detail: data.message,
-          life: 3000
-        })
+        }),
       })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          if (data.result == true) {
+            accountState.isLoggedIn = true;
+            accountState.role = data.user.role;
+            accountState.userid = data.user.id;
+            accountState.username = username.value;
+            getEnrolled();
+            if (route.query.redirect) {
+              router.push(route.query.redirect as string)
+            } else router.push("/");
+          }
+          toast.add({
+            severity: data.result ? "success" : "warn",
+            summary: "登录结果",
+            detail: data.message,
+            life: 3000,
+          });
+        });
+      break;
+    case "注册":
+      fetch(new URL("/register", baseApiUrl), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: username.value,
+          password: password.value,
+          role: selected.value,
+          email: email.value,
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          toast.add({
+            severity: "info",
+            summary: "注册结果",
+            detail: data.message,
+            life: 3000,
+          });
+        });
       break;
   }
 }
-
 </script>
 
 <template>
   <div id="login-bg">
     <div class="login-container">
-      <img :src="WoocLogo" alt="Wooc Logo">
+      <img :src="WoocLogo" alt="Wooc Logo" />
       <div class="login-title" :class="selected">
         <p class="teacher-title" @click="selected = 'teacher'">我是教师</p>
         <p class="student-title" @click="selected = 'student'">我是学生</p>
@@ -101,30 +116,35 @@ function onFormSubmit() {
           <label for="email">邮箱</label>
         </FloatLabel>
         <FloatLabel variant="on">
-          <Password id="password" :toggle-mask="true" v-model="password" type="password" :feedback="false" fluid />
+          <Password
+            id="password"
+            :toggle-mask="true"
+            v-model="password"
+            type="password"
+            :feedback="false"
+            fluid
+          />
           <label for="password">密码</label>
         </FloatLabel>
         <Button type="submit" :label="state" />
-
       </Form>
       <SelectButton v-model="state" :options="states"></SelectButton>
     </div>
   </div>
 </template>
 
-
 <style lang="css" scoped>
-.login-title>p {
+.login-title > p {
   cursor: pointer;
   transition: color 0.2s;
 }
 
-.login-title>p:hover {
+.login-title > p:hover {
   color: gray;
 }
 
-.login-title.student>.student-title,
-.login-title.teacher>.teacher-title {
+.login-title.student > .student-title,
+.login-title.teacher > .teacher-title {
   color: var(--color-tint);
 }
 

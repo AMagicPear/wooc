@@ -28,9 +28,6 @@ onMounted(async () => {
 <template>
   <LessonCard
     v-for="course in myCourses"
-    :id="course.id"
-    :title="course.title"
-    :teacher="course.teacher_name"
-    :imgsrc="course.cover_image"
+    v-bind="course"
   />
 </template>

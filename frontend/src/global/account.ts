@@ -21,8 +21,8 @@ export const getEnrolled = async () => {
 }
 
 // 调试时默认处于已登录
-accountState.isLoggedIn = true
-accountState.userid = 1
-accountState.role = 'student'
-accountState.username = "perry"
-getEnrolled()
+// accountState.isLoggedIn = true
+// accountState.userid = 1
+// accountState.role = 'student'
+// accountState.username = "perry"
+// getEnrolled()

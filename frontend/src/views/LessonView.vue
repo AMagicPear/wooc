@@ -10,12 +10,20 @@ import { accountState } from "@/global/account";
 import baseApiUrl, { getFile } from "@/api/baseUrl";
 import type { Course } from "@/api/lessonApi";
 const router = useRouter();
+const route = useRoute();
 const toast = useToast();
 const lessonId = Number(useRoute().params.courseid);
 
 const rating = ref(4);
 const courseInfo = ref<Course>();
 async function startLearning() {
+  if (!accountState.isLoggedIn) {
+    router.push({
+      path: "/login",
+      query: { redirect: route.fullPath },
+    });
+  }
+
   if (!isEnrolled.value) {
     let enrollResult = await (
       await fetch(new URL("/enroll", baseApiUrl), {
