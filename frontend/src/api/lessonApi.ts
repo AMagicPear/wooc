@@ -42,3 +42,13 @@ export interface Question {
     score: number,
     test_id: number
 }
+
+export interface Assignment {
+    course_id: number,
+    created_at: string,
+    deadline: string,
+    description: string,
+    id: number,
+    max_score: number,
+    title: string
+}

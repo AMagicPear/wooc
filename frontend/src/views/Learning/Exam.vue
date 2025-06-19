@@ -62,13 +62,12 @@ async function enterExam(exam: Exam) {
       <template #title
         ><span class="title">{{ exam.title }}</span></template
       >
-      <template #content>{{ exam.description }}</template>
+      <template #subtitle>{{ exam.description }}</template>
       <template #footer
-        ><span class="info"
-          >测试时长：{{ exam.duration }} 问题数量：{{
-            exam.question_count
-          }}</span
-        ></template
+        ><div class="info">
+          <span>问题数量：{{ exam.question_count }}</span
+          ><span>测试时长：{{ exam.duration }} 分钟</span>
+        </div></template
       >
       <Divider />
     </Card>
@@ -96,5 +95,7 @@ async function enterExam(exam: Exam) {
 }
 .info {
   color: gray;
+  display: flex;
+  justify-content: space-between;
 }
 </style>

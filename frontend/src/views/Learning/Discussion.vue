@@ -79,7 +79,6 @@ onMounted(async () => {
 </script>
 
 <template>
-  
   <div id="discussion">
     <ScrollTop target="window"/>
     <Card>
