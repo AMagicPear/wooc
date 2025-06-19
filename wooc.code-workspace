@@ -1,11 +1,63 @@
 {
-	"folders": [
-		{
-			"path": "frontend"
-		},
-		{
-			"path": "backend"
-		}
-	],
-	"settings": {}
+  "folders": [
+    {
+      "path": "frontend"
+    },
+    {
+      "path": "backend"
+    }
+  ],
+  "settings": {
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.patterns": {
+      "tsconfig.json": "tsconfig.*.json, env.d.ts",
+      "vite.config.*": "jsconfig*, vitest.config.*, cypress.config.*, playwright.config.*",
+      "package.json": "package-lock.json, pnpm*, .yarnrc*, yarn*, .eslint*, eslint*, .oxlint*, oxlint*, .prettier*, prettier*, .editorconfig, bun.lock",
+      "pyproject.toml": ".python-version"
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "explorer.autoRevealExclude": {
+      "**/.venv": true
+    },
+    "npm.packageManager": "bun",
+    "npm.scriptRunner": "bun"
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Start Backend",
+        "type": "debugpy",
+        "request": "launch",
+        "program": "${workspaceFolder:backend}/app.py",
+        "console": "integratedTerminal",
+        "cwd": "${workspaceFolder:backend}",
+        "args": [
+          "run"
+        ]
+      },
+      {
+        "name": "Start Frontend",
+        "type": "node",
+        "request": "launch",
+        "runtimeExecutable": "bun",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "console": "integratedTerminal",
+        "cwd": "${workspaceFolder:frontend}"
+      }
+    ],
+    "compounds": [
+      {
+        "name": "Start Full Stack",
+        "configurations": [
+          "Start Backend",
+          "Start Frontend"
+        ],
+        "preLaunchTask": null
+      }
+    ]
+  }
 }
