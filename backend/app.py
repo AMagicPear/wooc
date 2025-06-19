@@ -172,6 +172,7 @@ def create_test():
     except Exception as e:
         return jsonify({'message': f'创建失败: {str(e)}', 'result': False}), 500
 
+# TODO)) 这个API最好还是恢复一下，不然进了测验不知道在做什么测验只知道题目
 # 根据测试ID获取测试信息
 # @app.route('/tests/<int:test_id>', methods=['GET'])
 # def get_test_by_id(test_id):
@@ -271,16 +272,21 @@ def api_start_test(test_id):
 # 提交测试答案的路由
 @app.route('/tests/submit_test_answer', methods=['POST'])
 def api_submit_test_answer():
-    data = request.get_json()
+    data: dict[str, any] = request.get_json()
     attempt_id = data.get('attempt_id')
     question_id = data.get('question_id')
-    answer_text = data.get('answer_text')
+    # answer_text = data.get('answer_text')
+    # TODO)) 这里需要调整answer_text为answer，并且接收可能的两种类型
+    # 对于multiple_choice和short_answer类型的问题，answer为str类型
+    # 对于true_false和multiple_choice类型的问题，answer为list[int]类型
+    answer: list[int] | str = data['answer']
 
-    if not all([attempt_id, question_id, answer_text]):
+    if not all([attempt_id, question_id, answer]):
         return jsonify({'message': '缺少必要参数', 'result': False}), 400
 
     try:
-        answer_id = test_functions.submit_test_answer(attempt_id, question_id, answer_text)
+        # 此处函数内部需要更改！
+        answer_id = test_functions.submit_test_answer(attempt_id, question_id, answer)
         if answer_id is None:
             return jsonify({'message': '题目不存在', 'result': False}), 404
         return jsonify({

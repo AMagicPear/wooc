@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import LessonCard from '@/components/LessonCard.vue';
-import DefaultImg from "@/assets/pic/685110093414064026.webp"
 import baseApiUrl, { getFile } from '@/api/baseUrl';
 import { onMounted, ref } from 'vue';
 import type { Course } from '@/api/lessonApi';

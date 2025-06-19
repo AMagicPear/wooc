@@ -153,7 +153,7 @@ form {
   display: flex;
   align-items: center;
   justify-content: center;
-
+  position: absolute;
 }
 
 .login-container {

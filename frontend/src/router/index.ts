@@ -57,7 +57,7 @@ const router = createRouter({
         {
           path: 'exam/:examid',
           name: 'examcontent',
-          component: () => import('@/views/Learning/ExamContent.vue')
+          component: () => import('@/views/Learning/ExamContent.vue'),
         }
       ]
     },

@@ -22,9 +22,9 @@ onMounted(async () => {
   }
 });
 
-async function enterExam(id: number) {
+async function enterExam(exam: Exam) {
   let startTestRes = await fetch(
-    new URL(`/tests/${id}/start_test`, baseApiUrl),
+    new URL(`/tests/${exam.id}/start_test`, baseApiUrl),
     {
       method: "POST",
       headers: {
@@ -40,8 +40,11 @@ async function enterExam(id: number) {
   if (testStartInfo.result) {
     router.push({
       name: "examcontent",
-      params: { examid: id },
-      query: { attempt_id: testStartInfo.attempt_id },
+      params: { examid: exam.id },
+      query: {
+        attempt_id: testStartInfo.attempt_id,
+        // title: exam.title,
+      },
     });
   } else {
     toast.add({
@@ -55,7 +58,7 @@ async function enterExam(id: number) {
 
 <template>
   <div id="exam">
-    <Card v-for="exam in exams" class="exam-card" @click="enterExam(exam.id)">
+    <Card v-for="exam in exams" class="exam-card" @click="enterExam(exam)">
       <template #title
         ><span class="title">{{ exam.title }}</span></template
       >
