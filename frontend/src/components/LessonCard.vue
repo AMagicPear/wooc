@@ -21,7 +21,7 @@ function onCardClick() {
         img(:src="cover_image" alt="课程图片")
         .lesson-card-info
             p.title {{ title }}
-            p.teacher {{ teacher_name }}
+            p.teacher(v-if="teacher_name!=`课程教师失踪啦`") {{ teacher_name }}
 </template>
 
 <style scoped>

@@ -34,6 +34,28 @@ async function deleteComment() {
   }
 }
 
+const deleteReply = async (id: number) => {
+  let res = await fetch(new URL(`/discussion_replies/${id}`, baseApiUrl), {
+    method: "DELETE",
+  });
+  let data = await res.json();
+  if (data.result) {
+    toast.add({
+      summary: "回复删除成功",
+      severity: "success",
+      life: 3000,
+    });
+    fetchReplies();
+  } else {
+    toast.add({
+      summary: "回复删除失败",
+      detail: data.message,
+      severity: "error",
+      life: 3000,
+    });
+  }
+};
+
 const fetchReplies = async () => {
   let res = await fetch(
     new URL(`/discussions/${discussion.id}/replies`, baseApiUrl)
@@ -131,7 +153,25 @@ const replySubmit = async (event: FormSubmitEvent) => {
           <template #legend>
             <UserIdentity :author_name="reply.author_name" />
           </template>
-          <div v-html="reply.content" />
+
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: baseline;
+            "
+          >
+            <div v-html="reply.content" />
+            <Button
+              severity="danger"
+              icon="pi pi-trash"
+              rounded
+              text
+              @click="deleteReply(reply.id)"
+              style="flex-shrink: 0"
+              v-if="reply.author_id == accountState.userid"
+            />
+          </div>
         </Fieldset>
 
         <Transition>
