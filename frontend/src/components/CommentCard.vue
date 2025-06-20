@@ -45,9 +45,6 @@ const fetchReplies = async () => {
   } else {
     console.error("加载回复失败", data.message);
   }
-  if (replies.value?.length != discussion.reply_count) {
-    console.warn("API回复数量不一致");
-  }
 };
 
 const replies = ref<Reply[]>();
