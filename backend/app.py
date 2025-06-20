@@ -12,8 +12,17 @@ import util.assignment_functions as assignment_functions
 import util.discussion_functions as discussion_functions
 import json
 
-app = Flask(__name__)# 用户管理
+app = Flask(__name__, static_folder='../frontend/dist')# 用户管理
 CORS(app)  # 允许跨域访问（前后端分离开发时必须）
+
+@app.route('/')
+def index():
+    return send_from_directory(app.static_folder, 'index.html')
+
+@app.route('/<path:path>')
+def static_proxy(path):
+    return send_from_directory(app.static_folder, path)
+
 # __________________________________________账号相关_____________________________________________
 # 注册
 @app.route('/register', methods=['POST'])
