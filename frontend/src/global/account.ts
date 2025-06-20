@@ -9,7 +9,8 @@ export const accountState = reactive({
     userid: 0,
     role: 'none' as UserRole,
     username: undefined as string | undefined,
-    enrolled: [] as number[]
+    enrolled: [] as number[],
+    managed: [] as number[]
 })
 
 export const getEnrolled = async () => {
@@ -17,6 +18,14 @@ export const getEnrolled = async () => {
         await fetch(new URL(`/students/${accountState.userid}/courses`, baseApiUrl))
     ).json();
     accountState.enrolled = coursesResult.courses.map(course => course.id)
+    return coursesResult.courses
+}
+
+export const getManaged = async () => {
+    let coursesResult: { courses: Course[] } = await (
+        await fetch(new URL(`/teachers/${accountState.userid}/courses`, baseApiUrl))
+    ).json();
+    accountState.managed = coursesResult.courses.map(course => course.id)
     return coursesResult.courses
 }
 

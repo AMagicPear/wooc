@@ -4,6 +4,7 @@ import getBackgroundColor from "@/util/usernameBgColor";
 import { Avatar } from "primevue";
 import Menu from "primevue/menu";
 import { computed, ref } from "vue";
+import UploadIcon from "@/assets/icon/云上传.svg";
 const avatarMenu = ref();
 const items = ref([
   {
@@ -50,12 +51,16 @@ const backgroundColor = computed(() => {
   <header>
     <router-link to="/" class="left">
       <img src="@/assets/pic/wooc-logo.png" />
-      <h2>→砖大学WOOC</h2>
+      <h2 class="text-xl">→砖大学WOOC</h2>
     </router-link>
     <nav>
-      <router-link to="/">首页</router-link>
-      <router-link to="/about">关于</router-link>
-      <router-link v-if="!accountState.isLoggedIn" to="/login"
+      <router-link to="/offer" class="router-link" v-if="accountState.isLoggedIn && accountState.role == 'teacher'">
+        <img :src="UploadIcon" width="24px" />
+        <span>发布新课程</span>
+      </router-link>
+      <router-link to="/" class="router-link">首页</router-link>
+      <router-link to="/about" class="router-link">关于</router-link>
+      <router-link v-if="!accountState.isLoggedIn" to="/login" class="router-link"
         >登录｜注册</router-link
       >
       <Avatar
@@ -91,6 +96,12 @@ const backgroundColor = computed(() => {
 </template>
 
 <style lang="css" scoped>
+a.router-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 #avatar {
   cursor: pointer;
 }

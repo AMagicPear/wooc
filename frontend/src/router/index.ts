@@ -69,11 +69,22 @@ const router = createRouter({
         }
       ]
     },
+    {
+      path: '/offer',
+      component: () => import('@/views/OfferCourse.vue'),
+      meta: { requiresAuth: true, teacher: true }
+    }
   ],
 })
 
 router.beforeEach((to, from) => {
   if (to.meta.requiresAuth && !accountState.isLoggedIn) {
+    return {
+      path: '/login',
+      query: { redirect: to.fullPath }
+    }
+  }
+  if(to.meta.teacher && accountState.role != 'teacher') {
     return {
       path: '/login',
       query: { redirect: to.fullPath }

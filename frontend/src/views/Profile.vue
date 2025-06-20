@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { accountState, getEnrolled } from "@/global/account";
+import { accountState, getEnrolled, getManaged } from "@/global/account";
 import { Card } from "primevue";
 import { onMounted, ref } from "vue";
 import Tag from "primevue/tag";
@@ -8,10 +8,17 @@ import LessonCard from "@/components/LessonCard.vue";
 import Divider from "primevue/divider";
 import { getFile } from "@/api/baseUrl";
 const myCourses = ref<Course[]>();
+const myManagedCourses = ref<Course[]>();
 
 onMounted(async () => {
   myCourses.value = await getEnrolled();
-  myCourses.value.forEach(course => course.cover_image = getFile(course.cover_image))
+  myCourses.value.forEach(
+    (course) => (course.cover_image = getFile(course.cover_image))
+  );
+  myManagedCourses.value = await getManaged();
+  myManagedCourses.value.forEach(
+    (course) => (course.cover_image = getFile(course.cover_image))
+  );
 });
 </script>
 
@@ -26,20 +33,33 @@ onMounted(async () => {
         </div>
       </template>
     </Card>
-    <Divider type="solid" itemid="my-courses">
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <img src="@/assets/icon/学习档案.svg" width="20px" alt="已选课程">
-        <p>我的已选课程</p>
-      </div>
-    </Divider>
-    <LessonCard
-      v-for="course in myCourses"
-      v-bind="course"
-    />
+    <div v-if="accountState.role === 'teacher'">
+      <Divider type="solid" itemid="my-courses">
+        <div class="divider-content">
+          <img src="@/assets/icon/学习档案.svg" width="20px" alt="管理的课程" />
+          <p>我管理的课程</p>
+        </div>
+      </Divider>
+      <LessonCard v-for="course in myManagedCourses" v-bind="course" />
+    </div>
+    <div>
+      <Divider type="solid" itemid="my-courses">
+        <div class="divider-content">
+          <img src="@/assets/icon/学习档案.svg" width="20px" alt="已选课程" />
+          <p>我的已选课程</p>
+        </div>
+      </Divider>
+      <LessonCard v-for="course in myCourses" v-bind="course" />
+    </div>
   </div>
 </template>
 
 <style lang="css" scoped>
+.divider-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 .username {
   font-size: 64px;
   font-weight: bold;

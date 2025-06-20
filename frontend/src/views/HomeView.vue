@@ -16,12 +16,17 @@ onMounted(async () => {
 </script>
 
 <template lang="pug">
-    h2 →🧱精品课
-    .lesson-grid
-      LessonCard(v-for="course in courses" v-bind="course")
+    .home
+        h2.text-xl →🧱精品课
+        .lesson-grid
+            LessonCard(v-for="course in courses" v-bind="course")
 </template>
 
 <style lang="css" scoped>
+.home{
+    margin-block: 10px;
+}
+
 .lesson-grid {
     margin-top: 20px;
     display: grid;

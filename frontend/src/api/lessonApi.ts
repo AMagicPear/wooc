@@ -10,6 +10,13 @@ export interface Course {
     updated_at: string,
 }
 
+export interface CoursePost {
+    title: string,
+    description: string,
+    teacher_id: string,
+    cover_image: string,
+}
+
 export interface CourseResourceItem {
     "course_id": number,
     "created_at": string,

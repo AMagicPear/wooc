@@ -35,6 +35,7 @@ onMounted(() => {
     });
   }
 });
+
 function onFormSubmit() {
   switch (state.value) {
     case "登录":
@@ -102,7 +103,7 @@ function onFormSubmit() {
   <div id="login-bg">
     <div class="login-container">
       <img :src="WoocLogo" alt="Wooc Logo" />
-      <div class="login-title" :class="selected">
+      <div v-if="state == '注册'" class="login-title" :class="selected">
         <p class="teacher-title" @click="selected = 'teacher'">我是教师</p>
         <p class="student-title" @click="selected = 'student'">我是学生</p>
       </div>

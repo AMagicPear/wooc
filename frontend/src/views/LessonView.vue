@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
-import ExampleImg from "@/assets/pic/685110093414064026.webp";
 import Button from "primevue/button";
 import JoinCourse from "@/components/icons/JoinCourse.vue";
 import { Rating, useToast } from "primevue";
@@ -74,7 +73,16 @@ const isEnrolled = computed(() =>
   accountState.enrolled.some((courseId) => courseId == lessonId)
 );
 
-const buttonText = computed(() => (isEnrolled.value ? "继续学习" : "加入课程"));
+const isManaged = computed(() =>
+  accountState.managed.some((courseId) => courseId == lessonId)
+);
+
+const buttonText = computed(() => {
+  if(accountState.role == 'teacher' && isManaged.value) {
+    return '管理课程'
+  }else return (isEnrolled.value ? "继续学习" : "加入课程");
+});
+
 </script>
 
 <template lang="pug">
