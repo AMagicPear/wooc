@@ -60,7 +60,42 @@ const toggleReply = (event: MouseEvent) => {
 };
 
 const replySubmit = async (event: FormSubmitEvent) => {
-  console.log("reply", event.values);
+  let content = event.values.reply as string;
+  if (!content || content.trim() == "") {
+    toast.add({ summary: "回复内容不能为空", severity: "warn" });
+    return;
+  }
+  let res = await fetch(
+    new URL(`/discussions/${discussion.id}/replies`, baseApiUrl),
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        author_id: accountState.userid,
+        content,
+      }),
+    }
+  );
+  let data = await res.json();
+  if (data.result) {
+    toast.add({
+      summary: "回复成功",
+      detail: data.message,
+      severity: "success",
+      life: 3000,
+    });
+    event.reset();
+    fetchReplies();
+  } else {
+    toast.add({
+      summary: "回复失败",
+      detail: data.message,
+      severity: "error",
+      life: 3000,
+    });
+  }
 };
 </script>
 
@@ -102,7 +137,7 @@ const replySubmit = async (event: FormSubmitEvent) => {
         </template>
         <div v-html="content" />
         <!-- 回复 -->
-        <Fieldset v-if="reply_count > 0" v-for="reply in replies">
+        <Fieldset v-for="reply in replies">
           <template #legend>
             <div class="user-identify">
               <Avatar
