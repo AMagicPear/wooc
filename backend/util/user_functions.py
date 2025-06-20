@@ -36,8 +36,14 @@ def login_user(username, password):
                     'id': user['id'],
                     'role': user['role']
                 }
-        
         return None
+
+def get_all_users():
+    """获取所有用户信息"""
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, username, email, role, created_at FROM users")
+        return [dict(row) for row in cursor.fetchall()]
 
 def get_user_by_id(user_id):
     """根据用户ID获取用户信息"""

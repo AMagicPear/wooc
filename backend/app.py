@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, send_from_directory, abort,send_file
-import os
+import os,uuid
 # from werkzeug.utils import secure_filename
 from flask_cors import CORS
 import util.course_functions as course_functions
@@ -40,6 +40,14 @@ def login():
     else:
         return jsonify({'message': '登录失败','result':False}), 401
 
+#获取所有用户
+@app.route('/users', methods=['GET'])
+def get_all_users():
+    """获取所有用户"""
+    users = user_functions.get_all_users()
+    return jsonify({'users': users}), 200
+
+
 # 手动映射文件扩展名到 MIME 类型
 MIME_TYPE_MAPPING = {
     'jpg': 'image/jpeg',
@@ -66,6 +74,44 @@ def get_file(file_path):
     mimetype = MIME_TYPE_MAPPING.get(ext, 'application/octet-stream')
 
     return send_file(file_path, mimetype=mimetype)
+
+UPLOAD_FOLDER = 'uploads'
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+#文件上传接口
+@app.route('/upload_file', methods=['POST'])
+def upload_file():
+    try:
+        # 生成唯一文件夹名
+        upload_folder_name = str(uuid.uuid4())
+        current_upload_path = os.path.join(app.config['UPLOAD_FOLDER'], upload_folder_name)
+        
+        # 创建唯一文件夹
+        os.makedirs(current_upload_path)
+        
+        uploaded_filePaths: dict[str, str] = {}
+        for files in request.files.listvalues():
+            for file in files:
+                filename = file.filename
+                file_path = os.path.join(current_upload_path, filename)
+                file.save(file_path)
+                # 保存相对路径（便于客户端访问）
+                relative_path = os.path.join(UPLOAD_FOLDER,upload_folder_name, filename)
+                uploaded_filePaths[filename] = relative_path
+
+        return jsonify({
+            'message': '文件上传成功',
+            'file_paths': uploaded_filePaths,
+            'result': True
+        }), 200
+    except Exception as e:
+        print(e)
+        return jsonify({'message': f'上传失败: {str(e)}', 'result': False}), 500
+
+
 
 # ___________________________________________课程管理_______________________________________________
 # 创建课程
@@ -347,7 +393,7 @@ def get_test_attempt_answers(attempt_id):
 
 # ____________________________________作业管理______________________________________
 # 创建作业
-@app.route('/courses/<int:course_id>/assignments', methods=['POST'])
+@app.route('/courses/<int:course_id>/assignments', methods=['POST'])   
 def create_assignment(course_id):
     data = request.get_json()
     title = data.get('title')
@@ -370,32 +416,7 @@ def get_course_assignments(course_id):
     except Exception as e:
         return jsonify({'message': f'获取失败: {str(e)}', 'result': False}), 500
     
-UPLOAD_FOLDER = 'uploads'
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
 
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-#文件上传接口
-@app.route('/upload_file', methods=['POST'])
-def upload_file():
-    try:
-        uploaded_filePaths: dict[str, str] = {} # 记录上传文件名和服务器实际存储路径之间的字典
-        for files in request.files.listvalues():
-            for file in files:
-                filename = file.filename
-                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                file.save(file_path)
-                uploaded_filePaths[filename] = file_path
-
-        return jsonify({
-            'message': '文件上传成功',
-            'file_paths': uploaded_filePaths,
-            'result': True
-        }), 200
-    except Exception as e:
-        print(e)
-        return jsonify({'message': f'上传失败: {str(e)}', 'result': False}), 500
 
 #提交作业
 @app.route('/assignments/<int:assignment_id>/submit', methods=['POST'])
@@ -412,6 +433,8 @@ def submit_assignment(assignment_id):
         
         if not any([text, file_paths]):
             return jsonify({'message': '无作业内容', 'result': False}), 400
+
+        file_paths = json.dumps(file_paths) if file_paths else None
 
         submission_id = assignment_functions.submit_assignment(assignment_id, student_id, text, file_paths)
         return jsonify({
