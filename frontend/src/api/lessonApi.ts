@@ -60,9 +60,36 @@ export interface Assignment {
     title: string
 }
 
-export interface AssignmentSubmission {
+export interface AssignmentSubmissionPost {
     assignment_id: number;
     text: string;
     file_paths: Record<string, string>;
     student_id: number;
+}
+export interface AssignmentSubmission {
+    assignment_id: number;
+    content: string;
+    email: string;
+    feedback?: string;
+    file_path: Record<string, string>;
+    graded_at?: string;
+    grader_id?: number;
+    id: number;
+    score?: number;
+    student_id: number;
+    submitted_at: string;
+    username: string;
+}
+
+// 作业的批改
+export interface Grade{
+    id: number,
+    feedback: string,
+    email: string,
+    graded_at: string,
+    grader_id: number,
+    score: number
+    student_id: number,
+    username: string,
+    assignment_id: number
 }

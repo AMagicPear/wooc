@@ -97,7 +97,7 @@ onMounted(async () => {
             <InputText id="on_label" v-model="titleValue" fluid />
             <label for="on_label">请输入新话题主题</label>
           </FloatLabel>
-          <Button type="submit" severity="secondary" label="发起新话题" />
+          <Button type="submit" label="发起新话题" />
         </Form>
       </template>
     </Card>

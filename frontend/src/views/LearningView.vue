@@ -13,6 +13,8 @@ import IconShedule from "@/components/icons/IconShedule.vue";
 
 const route = useRoute();
 const courseId = Number(route.params.courseid);
+const method = route.params.method;
+
 const items = [
   {
     label: "公告",
@@ -41,7 +43,7 @@ const items = [
   },
 ];
 
-if (accountState.role == "teacher") {
+if (method == 'manage') {
   items.push({
     label: "选课学生情况",
     c_icon: IconShedule,
@@ -58,7 +60,7 @@ if (accountState.role == "teacher") {
           v-for="tab in items"
           :key="tab.label"
           :value="tab.route"
-          @click="$router.push(`/lesson/${courseId}/learn/${tab.route}`)"
+          @click="$router.push(`/lesson/${courseId}/${method}/${tab.route}`)"
         >
           <a class="tab-link">
             <i v-if="tab.icon" :class="tab.icon" />

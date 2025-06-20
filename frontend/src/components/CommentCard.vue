@@ -151,14 +151,13 @@ const replySubmit = async (event: FormSubmitEvent) => {
         <!-- 回复 -->
         <Fieldset v-for="reply in replies">
           <template #legend>
-            <UserIdentity :author_name="reply.author_name" />
+            <UserIdentity :author_name="reply.author_name"/>
           </template>
 
           <div
             style="
               display: flex;
               justify-content: space-between;
-              align-items: baseline;
             "
           >
             <div v-html="reply.content" />

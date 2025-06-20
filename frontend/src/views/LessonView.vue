@@ -25,7 +25,7 @@ async function startLearning() {
     return;
   }
   if (accountState.role == "teacher" && isManaged.value) {
-    router.push(`/lesson/${lessonId}/manage`);
+    router.push({ path: `/lesson/${lessonId}/manage` });
     return;
   } else if (!isEnrolled.value) {
     let enrollResult = await (
