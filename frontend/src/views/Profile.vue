@@ -40,7 +40,9 @@ onMounted(async () => {
           <p>我管理的课程</p>
         </div>
       </Divider>
-      <LessonCard v-for="course in myManagedCourses" v-bind="course" />
+      <div class="lesson-grid">
+        <LessonCard v-for="course in myManagedCourses" v-bind="course" />
+      </div>
     </div>
     <div>
       <Divider type="solid" itemid="my-courses">
@@ -49,12 +51,20 @@ onMounted(async () => {
           <p>我的已选课程</p>
         </div>
       </Divider>
-      <LessonCard v-for="course in myCourses" v-bind="course" />
+      <div class="lesson-grid">
+        <LessonCard v-for="course in myCourses" v-bind="course" />
+      </div>
     </div>
   </div>
 </template>
 
 <style lang="css" scoped>
+.lesson-grid {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
 .divider-content {
   display: flex;
   align-items: center;

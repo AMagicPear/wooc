@@ -28,19 +28,14 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
-      path: '/my-courses',
-      component: () => import('@/views/MyCourses.vue'),
-      meta: { requiresAuth: true }
-    },
-    {
       path: '/lesson/:courseid',
       component: () => import('@/views/LessonView.vue'),
     },
     {
-      path: '/lesson/:courseid/learn',
+      path: '/lesson/:courseid/:method',
       component: () => import('@/views/LearningView.vue'),
       meta: { requiresAuth: true },
-      redirect: (to) => `${to.params.courseid}/learn/notice`,
+      redirect: (to) => `${to.params.courseid}/${to.params.method}/notice`,
       children: [
         {
           path: 'notice',
@@ -85,6 +80,12 @@ router.beforeEach((to, from) => {
     }
   }
   if(to.meta.teacher && accountState.role != 'teacher') {
+    return {
+      path: '/login',
+      query: { redirect: to.fullPath }
+    }
+  }
+  if(to.params.method == 'manage' && accountState.role != 'teacher'){
     return {
       path: '/login',
       query: { redirect: to.fullPath }

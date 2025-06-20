@@ -15,11 +15,6 @@ const items = ref([
         icon: "pi pi-id-card",
         route: "/profile",
       },
-      {
-        label: "课程管理",
-        icon: "pi pi-book",
-        route: "/my-courses",
-      },
     ],
   },
   {

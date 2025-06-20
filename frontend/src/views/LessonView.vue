@@ -2,6 +2,7 @@
 import { useRoute, useRouter } from "vue-router";
 import Button from "primevue/button";
 import JoinCourse from "@/components/icons/JoinCourse.vue";
+import IconSetting from "@/components/icons/IconSetting.vue";
 import { Rating, useToast } from "primevue";
 import Card from "primevue/card";
 import { computed, onMounted, ref } from "vue";
@@ -21,9 +22,12 @@ async function startLearning() {
       path: "/login",
       query: { redirect: route.fullPath },
     });
+    return;
   }
-
-  if (!isEnrolled.value) {
+  if (accountState.role == "teacher" && isManaged.value) {
+    router.push(`/lesson/${lessonId}/manage`);
+    return;
+  } else if (!isEnrolled.value) {
     let enrollResult = await (
       await fetch(new URL("/enroll", baseApiUrl), {
         method: "POST",
@@ -78,11 +82,10 @@ const isManaged = computed(() =>
 );
 
 const buttonText = computed(() => {
-  if(accountState.role == 'teacher' && isManaged.value) {
-    return '管理课程'
-  }else return (isEnrolled.value ? "继续学习" : "加入课程");
+  if (accountState.role == "teacher" && isManaged.value) {
+    return "管理课程";
+  } else return isEnrolled.value ? "继续学习" : "加入课程";
 });
-
 </script>
 
 <template lang="pug">
@@ -94,7 +97,8 @@ const buttonText = computed(() => {
       p.teacher {{ courseInfo?.teacher_name }}
       Rating(v-model="rating" readonly)
       Button(@click="startLearning" rounded)
-        JoinCourse(style="width: 20px;height: 20px;")
+        IconSetting(v-if="isManaged" style="width: 20px;height: 20px;")
+        JoinCourse(v-else style="width: 20px;height: 20px;")
         | {{ buttonText }}
   Card
     template(#title) 课程概述

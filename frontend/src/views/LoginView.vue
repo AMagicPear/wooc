@@ -10,7 +10,7 @@ import FloatLabel from "primevue/floatlabel";
 import Password from "primevue/password";
 import { useToast } from "primevue/usetoast";
 
-import { accountState, getEnrolled } from "@/global/account";
+import { accountState, getEnrolled, getManaged } from "@/global/account";
 import { useRoute, useRouter } from "vue-router";
 
 const username = ref("");
@@ -59,6 +59,9 @@ function onFormSubmit() {
             accountState.userid = data.user.id;
             accountState.username = username.value;
             getEnrolled();
+            if(accountState.role == 'teacher'){
+              getManaged();
+            }
             if (route.query.redirect) {
               router.push(route.query.redirect as string)
             } else router.push("/");

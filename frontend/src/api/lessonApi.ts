@@ -13,8 +13,8 @@ export interface Course {
 export interface CoursePost {
     title: string,
     description: string,
-    teacher_id: string,
-    cover_image: string,
+    teacher_id: number,
+    cover_image?: string,
 }
 
 export interface CourseResourceItem {

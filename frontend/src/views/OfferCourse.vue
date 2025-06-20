@@ -2,8 +2,8 @@
 import Stepper from "primevue/stepper";
 import StepList from "primevue/steplist";
 import StepPanels from "primevue/steppanels";
-import { Card, Button, FloatLabel, InputText } from "primevue";
-import StepItem from "primevue/stepitem";
+import { Card, Button, FloatLabel, InputText, useToast } from "primevue";
+import FileUpload, { type FileUploadUploadEvent } from "primevue/fileupload";
 import Step from "primevue/step";
 import StepPanel from "primevue/steppanel";
 import { ref } from "vue";
@@ -12,16 +12,29 @@ import Editor from "primevue/editor";
 import Textarea from "primevue/textarea";
 import baseApiUrl from "@/api/baseUrl";
 import { accountState } from "@/global/account";
+import router from "@/router";
+
+const toast = useToast();
 
 const basicInfo = ref<CoursePost>({
   title: "",
   description: "",
-  teacher_id: "",
-  cover_image: "",
+  teacher_id: accountState.userid,
+  cover_image: undefined,
 });
+
 const announcement = ref<string>("");
+
 const submitOffer = async () => {
-  console.log("submit offer", basicInfo.value, announcement.value);
+  if (!basicInfo.value.title || !basicInfo.value.cover_image) {
+    toast.add({
+      summary: "提交失败",
+      detail: "请至少填写课程标题和封面图片",
+      severity: "error",
+      life: 3000,
+    });
+    return;
+  }
   let res = await fetch(new URL("/courses", baseApiUrl), {
     method: "POST",
     headers: {
@@ -30,11 +43,67 @@ const submitOffer = async () => {
     body: JSON.stringify({
       ...basicInfo.value,
       announcement: announcement.value,
-      teacher_id: accountState.userid
     }),
   });
-  let data = await res.json();
-  console.log(data)
+  if (res.ok) {
+    let data = await res.json();
+    toast.add({
+      summary: "提交成功",
+      detail: `课程ID: ${data.course_id}`,
+      severity: "success",
+      life: 3000,
+    });
+    router.push('/');
+  } else {
+    toast.add({
+      summary: "提交失败",
+      detail: `服务器错误: ${res.status}`,
+      severity: "error",
+      life: 3000,
+    });
+  }
+};
+
+const onUpload = (event: FileUploadUploadEvent) => {
+  console.log("uploaded cover img", event);
+  try {
+    if (event.xhr.status !== 200) throw new Error(event.xhr.response);
+    const response = JSON.parse(event.xhr.response);
+    if (response.result) {
+      const files = Object.keys(response.file_paths);
+      if (files.length < 1) {
+        toast.add({
+          summary: "上传失败",
+          detail: "没有上传文件",
+          severity: "error",
+          life: 3000,
+        });
+      } else {
+        basicInfo.value.cover_image = response.file_paths[files[0]];
+        toast.add({
+          summary: "上传成功",
+          detail: "封面图片上传成功",
+          severity: "success",
+          life: 3000,
+        });
+      }
+    } else {
+      toast.add({
+        summary: "上传失败",
+        detail: response.message,
+        severity: "error",
+        life: 3000,
+      });
+    }
+  } catch (error) {
+    console.error("上传封面图片失败:", error);
+    toast.add({
+      summary: "上传失败",
+      detail: "发生未知错误",
+      severity: "error",
+      life: 3000,
+    });
+  }
 };
 </script>
 
@@ -96,13 +165,25 @@ const submitOffer = async () => {
             </div>
           </StepPanel>
           <StepPanel v-slot="{ activateCallback }" value="3">
-            <div class="flex flex-col h-48">
-              <div
-                class="border-2 border-dashed border-surface-200 dark:border-surface-700 rounded bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium"
-              >
-                Content III
-              </div>
+            <div
+              class="flex-auto flex gap-4 justify-center items-center font-medium"
+            >
+              <span class="text-xl">上传课程封面</span>
+              <FileUpload
+                choose-label="选择封面图片"
+                mode="basic"
+                name="cover_img"
+                :url="`${baseApiUrl}/upload_file`"
+                accept="image/*"
+                :auto="true"
+                @upload="onUpload($event)"
+              />
             </div>
+            <div v-if="basicInfo.cover_image" class="flex gap-3 justify-center items-center">
+              <img src="@/assets/icon/学习完成.svg" width="16px" alt="已完成" />
+              <p class="text-lg">已成功上传</p>
+            </div>
+
             <div class="flex pt-6 justify-between">
               <Button
                 label="返回"
