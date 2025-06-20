@@ -7,11 +7,11 @@ import util.progress_functions as progress
 import util.discussion_functions as discussion
 import util.assignment_functions as assignment
 import util.test_functions as test
-
+import os
 
 def main():
     # 初始化数据库
-    delete_database("util\course_management.db")
+    delete_database(os.path.join("util","course_management.db"))
     init_database()
     
     # 示例：创建一个教师用户

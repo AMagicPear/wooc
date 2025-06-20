@@ -6,13 +6,13 @@ import type { Enrollment } from "@/api/enrollment";
 import baseApiUrl from "@/api/baseUrl";
 import { useRoute } from "vue-router";
 import UserIdentity from "@/components/UserIdentity.vue";
-import Badge from 'primevue/badge';
+import Badge from "primevue/badge";
 
 const courseId = useRoute().params.courseid;
 const enrollments = ref<Enrollment[]>([]);
 
 onMounted(async () => {
-  let res = await fetch(`${baseApiUrl}/courses/1/enrollments`);
+  let res = await fetch(`${baseApiUrl}/courses/${courseId}/enrollments`);
   let data = await res.json();
   if (res.ok && data.result) {
     enrollments.value = data.enrollments;
@@ -33,14 +33,18 @@ onMounted(async () => {
               :key="index"
             >
               <div
-                class="flex sm:items-center p-6 gap-4"
+                class="enrollment-title"
                 :class="{
-                  'border-t border-surface-200':
-                    index !== 0,
+                  'border-t border-surface-200': index !== 0,
                 }"
               >
                 <UserIdentity :author_name="enrollment.username" />
-                <p>ID: {{ enrollment.student_id }}</p>
+                <Badge severity="secondary">ID: {{ enrollment.student_id }}</Badge>
+              </div>
+              <div class="enrollment-info">
+                <p>邮箱 | {{ enrollment.email }}</p>
+                <p>选课时间 | {{ enrollment.enrolled_at }}</p>
+                <p>学习进度 | {{ enrollment.progress }}</p>
               </div>
             </div>
           </div>
@@ -49,3 +53,17 @@ onMounted(async () => {
     </template>
   </Card>
 </template>
+
+<style lang="css" scoped>
+.enrollment-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.enrollment-info {
+  margin-inline: 20px;
+  margin-bottom: 10px;
+}
+</style>
