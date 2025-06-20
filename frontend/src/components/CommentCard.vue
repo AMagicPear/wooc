@@ -4,17 +4,22 @@ import Avatar from "primevue/avatar";
 import Fieldset from "primevue/fieldset";
 import Panel from "primevue/panel";
 import { Button, useToast } from "primevue";
-import { computed } from "vue";
+import { onMounted, ref } from "vue";
 import getBackgroundColor from "@/util/usernameBgColor";
-import type { Discussion } from "@/api/discussion";
+import type { Discussion, Reply } from "@/api/discussion";
 import baseApiUrl from "@/api/baseUrl";
-const props = defineProps<Discussion>();
+import { accountState } from "@/global/account";
+import FloatLabel from "primevue/floatlabel";
+import InputText from "primevue/inputtext";
+import { Form, type FormSubmitEvent } from "@primevue/forms";
+
+const discussion = defineProps<Discussion>();
 const emit = defineEmits(["delete"]);
 const toast = useToast();
+const showReplyInput = ref<boolean>(false);
 
-const backgroundColor = computed(() => getBackgroundColor(props.author_name));
 async function deleteComment() {
-  let res = await fetch(new URL(`/discussions/${props.id}`, baseApiUrl), {
+  let res = await fetch(new URL(`/discussions/${discussion.id}`, baseApiUrl), {
     method: "DELETE",
   });
   let result = await res.json();
@@ -29,6 +34,34 @@ async function deleteComment() {
     toast.add({ summary: "删除失败", severity: "error" });
   }
 }
+
+const fetchReplies = async () => {
+  let res = await fetch(
+    new URL(`/discussions/${discussion.id}/replies`, baseApiUrl)
+  );
+  let data = await res.json();
+  if (data.result) {
+    replies.value = data.replies;
+  } else {
+    console.error("加载回复失败", data.message);
+  }
+  if (replies.value?.length != discussion.reply_count) {
+    console.warn("API回复数量不一致");
+  }
+};
+
+const replies = ref<Reply[]>();
+onMounted(() => {
+  fetchReplies();
+});
+
+const toggleReply = (event: MouseEvent) => {
+  showReplyInput.value = !showReplyInput.value;
+};
+
+const replySubmit = async (event: FormSubmitEvent) => {
+  console.log("reply", event.values);
+};
 </script>
 
 <template>
@@ -45,34 +78,67 @@ async function deleteComment() {
           <div class="user-identify">
             <Avatar
               :label="author_name.charAt(0).toUpperCase()"
-              :style="{ backgroundColor }"
+              :style="{ backgroundColor: getBackgroundColor(author_name) }"
             />
             <span>{{ author_name }}</span>
           </div>
         </template>
         <template #icons>
           <Button
+            severity="secondary"
+            icon="pi pi-reply"
+            rounded
+            text
+            v-on:click="toggleReply"
+          />
+          <Button
             severity="danger"
             icon="pi pi-trash"
             rounded
             text
             @click="deleteComment"
+            v-if="author_id == accountState.userid"
           />
         </template>
         <div v-html="content" />
         <!-- 回复 -->
-        <Fieldset v-if="reply_count > 0">
+        <Fieldset v-if="reply_count > 0" v-for="reply in replies">
           <template #legend>
             <div class="user-identify">
               <Avatar
-                :label="author_name.charAt(0).toUpperCase()"
-                :style="{ backgroundColor }"
+                :label="reply.author_name.charAt(0).toUpperCase()"
+                :style="{
+                  backgroundColor: getBackgroundColor(reply.author_name),
+                }"
               />
-              <span>{{ author_name }}</span>
+              <span>{{ reply.author_name }}</span>
             </div>
           </template>
-          <div v-html="content" />
+          <div v-html="reply.content" />
         </Fieldset>
+
+        <Transition>
+          <Form
+            v-show="showReplyInput"
+            :action="`${baseApiUrl}/discussions/${discussion.id}/replies`"
+            method="POST"
+            @submit="replySubmit($event)"
+          >
+            <FloatLabel
+              variant="on"
+              style="display: flex; gap: 1rem; margin-top: 1rem"
+            >
+              <InputText
+                name="reply"
+                id="reply"
+                autocomplete="off"
+                style="flex-grow: 7"
+              />
+              <label for="reply">在此输入回复</label>
+              <Button type="submit" label="发送" style="flex-grow: 3"></Button>
+            </FloatLabel>
+          </Form>
+        </Transition>
       </Panel>
     </template>
   </Card>
@@ -93,5 +159,16 @@ async function deleteComment() {
 
 .fieldset-content {
   margin: 0;
+}
+
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 </style>

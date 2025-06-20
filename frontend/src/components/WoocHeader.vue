@@ -44,7 +44,6 @@ const backgroundColor = computed(() => {
     return "gray";
   }
 });
-
 </script>
 
 <template>
@@ -126,8 +125,8 @@ header {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  background-color: var(--color-background);
+  width: 100vi;
+  background-color: rgba(255, 255, 255, 0.7);
   color: var(--color-text);
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
   padding: 15px 20px;
@@ -136,5 +135,7 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 </style>

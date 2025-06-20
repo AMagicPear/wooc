@@ -104,6 +104,7 @@ const submitAssignment = async () => {
     }
   );
   console.log("已提交：", submitReadyContent.value);
+  console.log(submitReadyContent.value.file_paths.toString())
   let data = await res.json();
   if (data.result) {
     toast.add({
@@ -127,8 +128,8 @@ const submitAssignment = async () => {
 const openSubmitDialog = (event: FormSubmitEvent, assignmentId: number) => {
   console.log("正在尝试提交作业，初始信息：", assignmentId, event);
   let text = event.values.text as string;
-  let file_paths: Record<string, string> = filePaths[assignmentId];
-  if (!text && !file_paths) {
+  let filePathsC: Record<string, string> = filePaths[assignmentId];
+  if (!text && !filePathsC) {
     toast.add({
       summary: "提交失败",
       detail: "请至少填写作业内容或上传文件",
@@ -140,7 +141,7 @@ const openSubmitDialog = (event: FormSubmitEvent, assignmentId: number) => {
   submitReadyContent.value = {
     assignment_id: assignmentId,
     text,
-    file_paths,
+    file_paths: filePathsC,
     student_id: accountState.userid,
   };
   dialogVisible.value = true;
