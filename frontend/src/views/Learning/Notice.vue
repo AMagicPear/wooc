@@ -1,12 +1,19 @@
 <script setup lang="ts">
+import baseApiUrl from "@/api/baseUrl";
 import Card from "primevue/card";
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 const courseId = Number(useRoute().params.courseid);
-const notice = ref("");
+const notice = ref<string>();
 
-onMounted(async () => {
-  notice.value = "公告";
+const getNotice = async () => {
+  let res = await fetch(`${baseApiUrl}/courses/${courseId}`);
+  let data = await res.json();
+  notice.value = data.notice ?? "默认公告";
+}
+
+onMounted(() => {
+  getNotice()
 });
 </script>
 

@@ -1,17 +1,16 @@
 <script setup lang="ts">
 import Card from "primevue/card";
-import Avatar from "primevue/avatar";
 import Fieldset from "primevue/fieldset";
 import Panel from "primevue/panel";
 import { Button, useToast } from "primevue";
 import { onMounted, ref } from "vue";
-import getBackgroundColor from "@/util/usernameBgColor";
 import type { Discussion, Reply } from "@/api/discussion";
 import baseApiUrl from "@/api/baseUrl";
 import { accountState } from "@/global/account";
 import FloatLabel from "primevue/floatlabel";
 import InputText from "primevue/inputtext";
 import { Form, type FormSubmitEvent } from "@primevue/forms";
+import UserIdentity from "./UserIdentity.vue";
 
 const discussion = defineProps<Discussion>();
 const emit = defineEmits(["delete"]);
@@ -107,13 +106,7 @@ const replySubmit = async (event: FormSubmitEvent) => {
     <template #content>
       <Panel toggleable>
         <template #header>
-          <div class="user-identify">
-            <Avatar
-              :label="author_name.charAt(0).toUpperCase()"
-              :style="{ backgroundColor: getBackgroundColor(author_name) }"
-            />
-            <span>{{ author_name }}</span>
-          </div>
+          <UserIdentity :author_name="author_name" />
         </template>
         <template #icons>
           <Button
@@ -136,15 +129,7 @@ const replySubmit = async (event: FormSubmitEvent) => {
         <!-- 回复 -->
         <Fieldset v-for="reply in replies">
           <template #legend>
-            <div class="user-identify">
-              <Avatar
-                :label="reply.author_name.charAt(0).toUpperCase()"
-                :style="{
-                  backgroundColor: getBackgroundColor(reply.author_name),
-                }"
-              />
-              <span>{{ reply.author_name }}</span>
-            </div>
+            <UserIdentity :author_name="reply.author_name" />
           </template>
           <div v-html="reply.content" />
         </Fieldset>

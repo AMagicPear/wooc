@@ -61,6 +61,10 @@ const router = createRouter({
         {
           path: 'assignments',
           component: () => import('@/views/Learning/Assignments.vue')
+        },
+        {
+          path: 'student-info',
+          component: () => import('@/views/Learning/Enrollment.vue')
         }
       ]
     },

@@ -8,9 +8,11 @@ import IconBooksStack from "@/components/icons/IconBooksStack.vue";
 import IconMedia from "@/components/icons/IconMedia.vue";
 import IconHat from "@/components/icons/IconHat.vue";
 import IconGroup from "@/components/icons/IconGroup.vue";
+import { accountState } from "@/global/account";
+import IconShedule from "@/components/icons/IconShedule.vue";
 
 const route = useRoute();
-const courseId = route.params.courseid;
+const courseId = Number(route.params.courseid);
 const items = [
   {
     label: "公告",
@@ -38,6 +40,14 @@ const items = [
     route: "discussion",
   },
 ];
+
+if (accountState.role == "teacher") {
+  items.push({
+    label: "选课学生情况",
+    c_icon: IconShedule,
+    route: "student-info",
+  });
+}
 </script>
 
 <template>
@@ -52,7 +62,11 @@ const items = [
         >
           <a class="tab-link">
             <i v-if="tab.icon" :class="tab.icon" />
-            <component v-else-if="tab.c_icon" :is="tab.c_icon" style="max-width: 20px; max-height: 20px;"/>
+            <component
+              v-else-if="tab.c_icon"
+              :is="tab.c_icon"
+              style="max-width: 20px; max-height: 20px"
+            />
             <span>{{ tab.label }}</span>
           </a>
         </Tab>

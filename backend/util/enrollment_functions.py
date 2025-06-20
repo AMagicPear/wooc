@@ -1,4 +1,5 @@
 from util.db_connection import get_db_connection
+import sqlite3
 
 def enroll_student(student_id, course_id):
     """学生选课"""
