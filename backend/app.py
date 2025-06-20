@@ -180,6 +180,20 @@ def enroll_student():
     else:
         return jsonify({'message': '学生已经选过该课程','result':False}), 400
 
+# 获取课程的所有选课学生
+@app.route('/courses/<int:course_id>/enrollments', methods=['GET'])
+def get_course_enrollments(course_id):
+    """获取课程的所有选课学生"""
+    try:
+        enrollments = enrollment_functions.get_course_enrollments(course_id)
+        return jsonify({
+            'message': '获取成功',
+            'enrollments': enrollments,
+            'result': True
+        }), 200
+    except Exception as e:
+        return jsonify({'message': f'获取失败: {str(e)}', 'result': False}), 500
+
 # 学习进度跟踪
 @app.route('/progress', methods=['POST'])
 def update_learning_progress():
@@ -507,8 +521,6 @@ def get_assignment_grades(assignment_id):
         }), 200
     except Exception as e:
         return jsonify({'message': f'获取失败: {str(e)}', 'result': False}), 500
-
-
 
 
 #______________________________________讨论区________________________________________
