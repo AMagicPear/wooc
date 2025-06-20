@@ -1,0 +1,169 @@
+@startuml
+class User {
+    - id: int
+    - username: string
+    - password: string
+    - email: string
+    - role: string
+    - created_at: timestamp
+    - updated_at: timestamp
+    + register(): int
+    + login(): User
+}
+
+class Course {
+    - id: int
+    - title: string
+    - description: string
+    - cover_image: string
+    - teacher_id: int
+    - created_at: timestamp
+    - updated_at: timestamp
+    + create(): int
+    + getById(): Course
+    + getAll(): List<Course>
+}
+
+class CourseResource {
+    - id: int
+    - course_id: int
+    - title: string
+    - description: string
+    - resource_type: string
+    - file_path: string
+    - file_size: int
+    - duration: int
+    - created_at: timestamp
+    + add(): int
+    + getByCourseId(): List<CourseResource>
+}
+
+class CourseEnrollment {
+    - id: int
+    - student_id: int
+    - course_id: int
+    - enrolled_at: timestamp
+    - completed_at: timestamp
+    - progress: int
+    + enroll(): int
+}
+
+class LearningProgress {
+    - id: int
+    - student_id: int
+    - resource_id: int
+    - watched_duration: int
+    - completed: boolean
+    - last_accessed_at: timestamp
+    + update(): boolean
+}
+
+class Discussion {
+    - id: int
+    - course_id: int
+    - title: string
+    - content: string
+    - author_id: int
+    - created_at: timestamp
+    - updated_at: timestamp
+    + create(): int
+}
+
+class DiscussionReply {
+    - id: int
+    - discussion_id: int
+    - content: string
+    - author_id: int
+    - created_at: timestamp
+    + reply(): int
+}
+
+class Assignment {
+    - id: int
+    - course_id: int
+    - title: string
+    - description: string
+    - deadline: timestamp
+    - max_score: int
+    - created_at: timestamp
+    + create(): int
+    + getByCourseId(): List<Assignment>
+}
+
+class AssignmentSubmission {
+    - id: int
+    - assignment_id: int
+    - student_id: int
+    - content: string
+    - file_path: string
+    - submitted_at: timestamp
+    - score: int
+    - feedback: string
+    - graded_at: timestamp
+    - grader_id: int
+    + submit(): int
+}
+
+class Test {
+    - id: int
+    - course_id: int
+    - title: string
+    - description: string
+    - duration: int
+    - passing_score: int
+    - created_at: timestamp
+    + create(): int
+    + getById(): Test
+    + getByCourseId(): List<Test>
+    + delete(): boolean
+}
+
+class TestQuestion {
+    - id: int
+    - test_id: int
+    - question_text: string
+    - question_type: string
+    - options: string
+    - correct_answer: string
+    - score: int
+    + add(): int
+    + getByTestId(): List<TestQuestion>
+}
+
+class TestAttempt {
+    - id: int
+    - test_id: int
+    - student_id: int
+    - started_at: timestamp
+    - submitted_at: timestamp
+    - score: int
+    + start(): int
+    + submit(): int
+}
+
+class TestAnswer {
+    - id: int
+    - attempt_id: int
+    - question_id: int
+    - answer_text: string
+    - is_correct: boolean
+    - score: int
+    + answer(): int
+}
+
+User "1" -- "*" Course : teaches
+User "1" -- "*" CourseEnrollment : enrolls
+User "1" -- "*" Discussion : creates
+User "1" -- "*" DiscussionReply : replies
+User "1" -- "*" AssignmentSubmission : submits
+User "1" -- "*" TestAttempt : attempts
+Course "1" -- "*" CourseResource : has
+Course "1" -- "*" CourseEnrollment : is enrolled in
+Course "1" -- "*" Discussion : has
+Course "1" -- "*" Assignment : has
+Course "1" -- "*" Test : has
+Test "1" -- "*" TestQuestion : has
+TestAttempt "1" -- "*" TestAnswer : has
+CourseEnrollment "1" -- "*" LearningProgress : has
+
+@enduml

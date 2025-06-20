@@ -1,0 +1,41 @@
+@startuml
+class LessonCard {
+    - props: Course
+    + onCardClick(): void
+}
+
+class LoginView {
+    - username: string
+    - password: string
+    - email: string
+    - selected: string
+    - state: string
+    + onFormSubmit(): void
+}
+
+class Couseware {
+    - selectedChapter: CourseResource
+    - resources: List<CourseResource>
+    - images: List<CourseImage>
+    + getFile(): string
+}
+
+class Assignments {
+    - assignments: List<Assignment>
+    - dialogVisible: boolean
+    - filePaths: Record<number, Record<string, string>>
+    - isComplete: Record<number, boolean>
+    - submitReadyContent: AssignmentSubmission
+    + onUpload(): void
+    + onRemoveUploadedFile(): void
+    + submitAssignment(): void
+    + openSubmitDialog(): void
+}
+
+LessonCard --> Course : uses
+LoginView --> User : interacts with
+Couseware --> CourseResource : uses
+Assignments --> Assignment : uses
+Assignments --> AssignmentSubmission : uses
+
+@enduml

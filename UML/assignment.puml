@@ -1,0 +1,7 @@
+@startuml
+[*] --> Draft: 开始撰写作业
+Draft --> Submitted: 提交作业
+Submitted --> Graded: 教师批改作业
+Graded --> [*]: 作业完成
+
+@enduml

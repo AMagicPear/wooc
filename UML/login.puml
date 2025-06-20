@@ -1,0 +1,17 @@
+@startuml
+actor User as U
+participant "LoginView" as LV
+participant "Backend Server" as BS
+participant "User Database" as DB
+
+U -> LV: 输入用户名和密码，点击登录
+LV -> BS: 发送登录请求（POST /login）
+activate BS
+BS -> DB: 查询用户信息
+activate DB
+DB --> BS: 返回用户信息
+deactivate DB
+BS --> LV: 返回登录结果
+deactivate BS
+LV --> U: 显示登录结果
+@enduml

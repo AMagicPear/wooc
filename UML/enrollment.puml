@@ -1,0 +1,26 @@
+@startuml
+actor Student as S
+participant "LessonCard" as LC
+participant "Backend Server" as BS
+participant "Course Database" as CD
+participant "Enrollment Database" as ED
+
+S -> LC: 点击课程卡片
+LC -> BS: 发送选课请求（POST /enroll）
+activate BS
+BS -> CD: 检查课程是否存在
+activate CD
+CD --> BS: 返回课程信息
+deactivate CD
+BS -> ED: 检查学生是否已选该课程
+activate ED
+ED --> BS: 返回选课信息
+deactivate ED
+BS -> ED: 插入选课记录
+activate ED
+ED --> BS: 返回选课结果
+deactivate ED
+BS --> LC: 返回选课结果
+deactivate BS
+LC --> S: 显示选课结果
+@enduml
