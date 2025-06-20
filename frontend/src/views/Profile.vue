@@ -26,7 +26,12 @@ onMounted(async () => {
         </div>
       </template>
     </Card>
-    <Divider type="solid"><span>我的已选课程</span></Divider>
+    <Divider type="solid" itemid="my-courses">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <img src="@/assets/icon/学习档案.svg" width="20px" alt="已选课程">
+        <p>我的已选课程</p>
+      </div>
+    </Divider>
     <LessonCard
       v-for="course in myCourses"
       v-bind="course"

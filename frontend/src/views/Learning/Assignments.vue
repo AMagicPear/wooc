@@ -147,28 +147,19 @@ const openSubmitDialog = (event: FormSubmitEvent, assignmentId: number) => {
 };
 </script>
 
-<template>
-  <div id="assignments">
-    <Card v-for="assignment in assignments" :key="assignment.id">
-      <template #title
-        ><span class="title">{{ assignment.title }}</span>
-      </template>
-      <template #subtitle>
-        {{ assignment.description }}
-      </template>
-      <template #content>
-        <Form v-if="!isComplete[assignment.id]" @submit="openSubmitDialog($event, assignment.id)">
-          <Editor name="text" editor-style="height: 120px" />
-          <div
-            style="
-              margin-top: 10px;
-              display: flex;
-              flex-direction: column;
-              gap: 20px;
-            "
-          >
-            <FileUpload
-              mode="advanced"
+<template lang="pug">
+  #assignments
+    Card(v-for="assignment in assignments" :key="assignment.id")
+      template(#title)
+        span.title {{ assignment.title }}
+
+      template(#subtitle) {{ assignment.description }}
+
+      template(#content)
+        Form(v-if="!isComplete[assignment.id]" @submit="openSubmitDialog($event, assignment.id)")
+          Editor(name="text" editor-style="height: 120px")
+          div(style="margin-top: 10px;display: flex;flex-direction: column;gap: 20px;")
+            FileUpload(mode="advanced"
               choose-label="添加附件"
               upload-label="上传"
               cancel-label="取消"
@@ -176,64 +167,54 @@ const openSubmitDialog = (event: FormSubmitEvent, assignmentId: number) => {
               :url="`${baseApiUrl}/upload_file`"
               @upload="onUpload($event, assignment.id)"
               :multiple="true"
-              @remove-uploaded-file="
-                onRemoveUploadedFile($event, assignment.id)
-              "
-            >
-              <template #empty>
-                <span>点击添加或拖拽文件到此处上传</span>
-              </template>
-            </FileUpload>
-            <Button label="提交作业" type="submit" />
-          </div>
-        </Form>
-        <p v-else>已完成</p>
-      </template>
-      <template #footer>
-        <div class="info">
-          <span>截止日期：{{ assignment.deadline }}</span>
-          <span>总分：{{ assignment.max_score }}</span>
-        </div>
-      </template>
-    </Card>
-  </div>
-  <Dialog v-model:visible="dialogVisible" header="确认提交作业吗？">
-    <template #default>
-      <div>
-        <div v-if="submitReadyContent?.text">
-          <p>当前已填写正文内容：</p>
-          <div v-html="submitReadyContent?.text"></div>
-        </div>
-        <div v-if="submitReadyContent?.file_paths">
-          <p>已上传文件：</p>
-          <ul>
-            <li v-for="(path, name) in submitReadyContent.file_paths">
-              {{ name }}
-            </li>
-          </ul>
-        </div>
-      </div>
-    </template>
-    <template #footer>
-      <Button
-        label="返回"
+              @remove-uploaded-file="onRemoveUploadedFile($event, assignment.id)")
+            
+              template(#empty)
+                span 点击添加或拖拽文件到此处上传
+
+            Button(label="提交作业" type="submit")
+
+        .complete-text(v-else)
+          img(src="@/assets/icon/学习完成.svg" width="16px" alt="已完成")
+          p 已完成
+
+      template(#footer)
+        .info
+          span 截止日期：{{ assignment.deadline }}
+          span 总分：{{ assignment.max_score }}
+
+  Dialog(v-model:visible="dialogVisible" header="确认提交作业吗？")
+    template(#default)
+      div
+        div(v-if="submitReadyContent?.text")
+          p 当前已填写正文内容：
+          div(v-html="submitReadyContent?.text")
+
+        div(v-if="submitReadyContent?.file_paths")
+          p 已上传文件：
+          ul: li(v-for="(path, name) in submitReadyContent.file_paths") {{ name }}
+
+    template(#footer)
+      Button(label="返回"
         text
         severity="secondary"
         @click="dialogVisible = false"
-        autofocus
-      />
-      <Button
-        label="提交"
+        autofocus)
+      
+      Button(label="提交"
         outlined
         severity="secondary"
         @click="submitAssignment()"
-        autofocus
-      />
-    </template>
-  </Dialog>
+        autofocus)
+
 </template>
 
 <style lang="css" scoped>
+.complete-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 #assignments {
   padding-block: 20px;
 }

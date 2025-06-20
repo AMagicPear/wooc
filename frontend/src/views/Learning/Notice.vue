@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import Card from 'primevue/card'
+import Card from "primevue/card";
+import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
+const courseId = Number(useRoute().params.courseid);
+const notice = ref("");
+
+onMounted(async () => {
+  notice.value = "公告";
+});
 </script>
 
 <template lang="pug">
@@ -7,11 +15,11 @@ import Card from 'primevue/card'
     Card()
         template(#title) 课程公告
         template(#content)
-            p.m-0 课程公告内容
+            div(v-html="notice")
 </template>
 
 <style lang="css" scoped>
-.notice{
-    margin-top: 20px;
+.notice {
+  margin-top: 20px;
 }
 </style>

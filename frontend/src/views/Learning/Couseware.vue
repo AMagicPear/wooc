@@ -94,7 +94,23 @@ watch(
             />
           </template>
         </Galleria>
-        <span v-else>课程资源不见啦</span>
+        <!-- <span v-else>课程资源不见啦</span> -->
+        <!-- 测试嵌入PPT -->
+        <iframe
+          v-else-if="selectedChapter?.resource_type == 'document'"
+          src="https://1drv.ms/p/c/50f6b3c53478a9b8/IQTTxD0rULWdTantmEOWvxOMAZ-cvnNUKy-TXMLqNYZPaVA?em=2&amp;wdAr=1.7777777777777777"
+          width="100%"
+          height="500px"
+          frameborder="0"
+          style="border-radius: 12px;"
+          ></iframe>
+        <!-- <iframe
+          v-else-if="selectedChapter?.resource_type == 'document'"
+          :src="selectedChapter.file_path"
+          width="100%"
+          height="500px"
+          frameborder="0"
+          ></iframe> -->
       </template>
       <template #footer>
         {{ selectedChapter?.created_at }}
