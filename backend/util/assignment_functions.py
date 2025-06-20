@@ -48,7 +48,7 @@ def submit_assignment(assignment_id, student_id, content=None, file_paths=None):
             """INSERT INTO assignment_submissions 
                (assignment_id, student_id, content, file_path, submitted_at) 
                VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)""",
-            (assignment_id, student_id, content, json.dumps(file_paths))
+            (assignment_id, student_id, content, file_paths)
         )
         conn.commit()
         return cursor.lastrowid
