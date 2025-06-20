@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS course_resources (
     course_id INTEGER NOT NULL,
     title TEXT NOT NULL,
     description TEXT,
+    viewer_ids TEXT --看过这个资源的用户的ID列表，使用JSON格式存储
     resource_type TEXT NOT NULL CHECK(resource_type IN ('video', 'audio', 'document', 'image', 'link')),
     file_path TEXT,
     file_size INTEGER,
@@ -138,7 +139,7 @@ CREATE TABLE IF NOT EXISTS test_questions (
     FOREIGN KEY (test_id) REFERENCES tests(id) ON DELETE CASCADE
 );
 
--- 测试答卷表
+-- 测试提交表
 CREATE TABLE IF NOT EXISTS test_attempts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     test_id INTEGER NOT NULL,
