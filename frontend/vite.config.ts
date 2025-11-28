@@ -3,7 +3,7 @@ import { vite as vidstack } from 'vidstack/plugins'
 import { defineConfig } from 'vite'
 import tailwindcss from '@tailwindcss/vite'
 import vue from '@vitejs/plugin-vue'
-import vueDevTools from 'vite-plugin-vue-devtools'
+// import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -15,7 +15,7 @@ export default defineConfig({
         }
       }
     }),
-    vueDevTools(),
+    // vueDevTools(),
     vidstack(),
     tailwindcss(),
   ],

@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS course_resources (
     course_id INTEGER NOT NULL,
     title TEXT NOT NULL,
     description TEXT,
-    viewer_ids TEXT --看过这个资源的用户的ID列表，使用JSON格式存储
+    viewer_ids TEXT, --看过这个资源的用户的ID列表，使用JSON格式存储
     resource_type TEXT NOT NULL CHECK(resource_type IN ('video', 'audio', 'document', 'image', 'link')),
     file_path TEXT,
     file_size INTEGER,
